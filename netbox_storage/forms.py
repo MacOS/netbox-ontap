@@ -3,7 +3,8 @@ from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelI
 from utilities.forms.fields import DynamicModelChoiceField, CSVModelChoiceField, DynamicModelMultipleChoiceField, CSVModelMultipleChoiceField
 from dcim.models import Device
 from virtualization.models import Cluster, VirtualMachine
-from .models import StoragePool, StorageSession, LUN, Datastore, VMDK
+from tenancy.models import Tenant
+from .models import StoragePool, StorageSession, LUN, Datastore, VMDK, Quota
 
 
 #
@@ -22,12 +23,30 @@ class StoragePoolForm(NetBoxModelForm):
 
 class LUNForm(NetBoxModelForm):
     storage_pool = DynamicModelChoiceField(
-        queryset=StoragePool.objects.all()
+        queryset=StoragePool.objects.all(),
+        required=False
+    )
+    
+    tenant = DynamicModelChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False
     )
 
     class Meta:
         model = LUN
-        fields = ('storage_pool', 'name', 'size', 'wwn', 'description')
+        fields = ('storage_pool', 'tenant','name', 'size', 'wwn', 'description')
+
+
+class QuotaForm(NetBoxModelForm):
+    tenant = DynamicModelChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False
+    )
+
+    class Meta:
+        model = Quota
+        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'description')
+
 
 
 class DatastoreForm(NetBoxModelForm):
@@ -95,12 +114,36 @@ class LUNFilterForm(NetBoxModelFilterSetForm):
         queryset=StoragePool.objects.all(),
         required=False
     )
+    tenant = DynamicModelMultipleChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False
+    )
     name = forms.CharField(
         required=False
     )
     wwn = forms.CharField(
         required=False,
         label='WWN'
+    )
+    
+        
+class QuotaFilterForm(NetBoxModelFilterSetForm):
+    model = Quota
+    tenant = DynamicModelMultipleChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False
+    )
+    volume_name = forms.CharField(
+        required=False,
+        label='Volume Name'
+    )
+    qtree_name = forms.CharField(
+        required=False,
+        label='Qtree Name'
+    )
+    svm_name = forms.CharField(
+        required=False,
+        label='SVM Name'
     )
 
 
@@ -174,6 +217,18 @@ class LUNCSVForm(NetBoxModelImportForm):
     class Meta:
         model = LUN
         fields = ('storage_pool', 'name', 'size', 'wwn', 'description')
+
+       
+class QuotaCSVForm(NetBoxModelImportForm):
+    tenant = CSVModelChoiceField(
+        queryset=Tenant.objects.all(),
+        to_field_name='name',
+        required=False
+    )
+
+    class Meta:
+        model = Quota
+        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'description')
 
 
 class DatastoreCSVForm(NetBoxModelImportForm):

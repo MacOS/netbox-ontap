@@ -2,7 +2,7 @@ import django_tables2 as tables
 
 from django.template.defaultfilters import filesizeformat
 from netbox.tables import NetBoxTable, columns
-from .models import StoragePool, StorageSession, Datastore, LUN, VMDK
+from .models import Quota, StoragePool, StorageSession, Datastore, LUN, VMDK
 
 
 class UtilizationColumn(columns.UtilizationColumn):
@@ -45,16 +45,39 @@ class LUNTable(NetBoxTable):
     storage_pool = tables.Column(
         linkify=True
     )
+    tenant = tables.Column(
+        linkify=True
+    )
 
     class Meta(NetBoxTable.Meta):
         model = LUN
         fields = (
-            'pk', 'id', 'name', 'storage_pool', 'size', 'wwn', 'description', 'actions',
+            'pk', 'id', 'name', 'tenant', 'storage_pool', 'size', 'wwn', 'description', 'actions',
         )
         default_columns = (
-            'name', 'storage_pool', 'size',
+            'name', 'tenant', 'storage_pool', 'size',
         )
 
+    def render_size(self, value):
+        return filesizeformat(value)
+
+
+class QuotaTable(NetBoxTable):
+    name = tables.Column(
+        linkify=True
+    )
+    tenant = tables.Column(
+        linkify=True
+    )
+
+    class Meta(NetBoxTable.Meta):
+        model = Quota
+        fields = (
+            'pk', 'id', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'description',
+            'actions'
+        )
+        default_columns = ('volume_name', 'tenant', 'size')
+        
     def render_size(self, value):
         return filesizeformat(value)
 

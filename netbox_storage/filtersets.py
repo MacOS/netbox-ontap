@@ -1,7 +1,7 @@
 from netbox.filtersets import NetBoxModelFilterSet
 import django_filters
 from virtualization.models import VirtualMachine
-from .models import StoragePool, LUN, StorageSession, Datastore, VMDK
+from .models import StoragePool, LUN, StorageSession, Datastore, VMDK, Quota
 
 
 class StoragePoolFilterSet(NetBoxModelFilterSet):
@@ -18,10 +18,19 @@ class LUNFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = LUN
-        fields = ('id', 'storage_pool', 'name', 'wwn',)
+        fields = ('id', 'tenant', 'storage_pool', 'name', 'wwn',)
 
     def search(self, queryset, name, value):
         return queryset.filter(name__icontains=value)
+
+
+class QuotaFilterSet(NetBoxModelFilterSet):
+    class Meta:
+        model = Quota
+        fields = ('id', 'volume_name', 'tenant', 'qtree_name', 'svm_name',)
+
+    def search(self, queryset, name, value):
+        return queryset.filter(volume_name__icontains=value)
 
 
 class DatastoreFilterSet(NetBoxModelFilterSet):

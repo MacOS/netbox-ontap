@@ -28,6 +28,20 @@ urlpatterns = (
     path('lun/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='lun_changelog', kwargs={
         'model': models.LUN
     }),
+    
+        
+    # Quotas
+    path('quota/', views.QuotaListView.as_view(), name='quota_list'),
+    path('quota/add/', views.QuotaEditView.as_view(), name='quota_add'),
+    path('quota/import/', views.QuotaImportView.as_view(), name='quota_import'),
+    path('quota/<int:pk>/', views.QuotaView.as_view(), name='quota'),
+    path('quota/<int:pk>/edit/', views.QuotaEditView.as_view(), name='quota_edit'),
+    path('quota/<int:pk>/delete/', views.QuotaDeleteView.as_view(), name='quota_delete'),
+    path('quota/delete/', views.QuotaBulkDeleteView.as_view(), name='quota_bulk_delete'),
+    path('quota/<int:pk>/changelog/', ObjectChangeLogView.as_view(), name='quota_changelog', kwargs={
+        'model': models.Quota
+    }),
+
 
     # Datastores
     path('datastore/', views.DatastoreListView.as_view(), name='datastore_list'),

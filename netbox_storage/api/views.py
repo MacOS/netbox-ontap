@@ -1,7 +1,7 @@
 from netbox.api.viewsets import NetBoxModelViewSet
 
 from .. import filtersets, models
-from .serializers import StoragePoolSerializer, LUNSerializer, StorageSessionSerializer, DatastoreSerializer, VMDKSerializer
+from .serializers import StoragePoolSerializer, LUNSerializer, QuotaSerializer, StorageSessionSerializer, DatastoreSerializer, VMDKSerializer
 
 
 class StoragePoolViewSet(NetBoxModelViewSet):
@@ -12,10 +12,16 @@ class StoragePoolViewSet(NetBoxModelViewSet):
 
 class LUNViewSet(NetBoxModelViewSet):
     queryset = models.LUN.objects.prefetch_related(
-        'storage_pool', 'tags'
+        'storage_pool', 'tenant', 'tags'
     )
     serializer_class = LUNSerializer
     filterset_class = filtersets.LUNFilterSet
+
+
+class QuotaViewSet(NetBoxModelViewSet):
+    queryset = models.Quota.objects.prefetch_related('tenant', 'tags')
+    serializer_class = QuotaSerializer
+    filterset_class = filtersets.QuotaFilterSet
 
 
 class DatastoreViewSet(NetBoxModelViewSet):

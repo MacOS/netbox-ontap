@@ -2,9 +2,10 @@ from rest_framework import serializers
 
 from virtualization.api.serializers import ClusterSerializer, VirtualMachineSerializer
 from dcim.api.serializers import DeviceSerializer
+from tenancy.api.serializers import TenantSerializer
 from netbox.api.serializers import NetBoxModelSerializer
 from netbox.api.fields import SerializedPKRelatedField
-from ..models import StoragePool, LUN, StorageSession, Datastore, VMDK
+from ..models import StoragePool, LUN, Quota, StorageSession, Datastore, VMDK
 
 
 class StoragePoolSerializer(NetBoxModelSerializer):
@@ -29,16 +30,34 @@ class LUNSerializer(NetBoxModelSerializer):
         view_name='plugins-api:netbox_storage-api:lun-detail'
     )
     storage_pool = StoragePoolSerializer(nested=True)
+    tenant = TenantSerializer(nested=True)
 
     class Meta:
         model = LUN
         fields = (
             'id', 'url', 'display', 'name', 'size', 'storage_pool', 'wwn',
-            'description', 'tags', 'custom_fields',
+            'tenant', 'description', 'tags', 'custom_fields',
             'created', 'last_updated',
         )
         brief_fields = (
-            'id', 'url', 'display', 'name', 'size', 'storage_pool', 
+            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'tenant',
+        )
+
+
+class QuotaSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='plugins-api:netbox_storage-api:quota-detail'
+    )
+    tenant = TenantSerializer(nested=True)
+
+    class Meta:
+        model = Quota
+        fields = (
+            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'description',
+            'tags', 'custom_fields', 'created', 'last_updated',
+        )
+        brief_fields = (
+            'id', 'url', 'display', 'volume_name', 'size', 'tenant',
         )
 
 

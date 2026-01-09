@@ -91,6 +91,39 @@ class LUNImportView(generic.BulkImportView):
 
 
 #
+# Quota views
+#
+
+class QuotaView(generic.ObjectView):
+    queryset = models.Quota.objects.all()
+
+class QuotaListView(generic.ObjectListView):
+    queryset = models.Quota.objects.all()
+    table = tables.QuotaTable
+    filterset = filtersets.QuotaFilterSet
+    filterset_form = forms.QuotaFilterForm
+    
+class QuotaEditView(generic.ObjectEditView):
+    queryset = models.Quota.objects.all()
+    form = forms.QuotaForm
+    
+class QuotaDeleteView(generic.ObjectDeleteView):
+    queryset = models.Quota.objects.all()
+
+
+class QuotaBulkDeleteView(generic.BulkDeleteView):
+    queryset = models.Quota.objects.all()
+    table = tables.QuotaTable
+    filterset = filtersets.QuotaFilterSet
+
+
+class QuotaImportView(generic.BulkImportView):
+    queryset = models.Quota.objects.all()
+    model_form = forms.QuotaCSVForm
+    table = tables.QuotaTable
+
+
+#
 # StorageLUNGroup views
 #
 

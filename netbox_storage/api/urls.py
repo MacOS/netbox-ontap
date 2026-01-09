@@ -7,6 +7,7 @@ app_name = 'netbox_storage'
 router = NetBoxRouter()
 router.register('storagepool', views.StoragePoolViewSet)
 router.register('lun', views.LUNViewSet)
+router.register('quota', views.QuotaViewSet)
 router.register('datastore', views.DatastoreViewSet)
 router.register('storagesession', views.StorageSessionViewSet)
 router.register('vmdk', views.VMDKViewSet)

@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.db.models import Sum
 from netbox.models import NetBoxModel
+from tenancy.models import Tenant
 
 
 class StoragePool(NetBoxModel):
@@ -42,7 +43,9 @@ class LUN(NetBoxModel):
     storage_pool = models.ForeignKey(
         to=StoragePool,
         on_delete=models.PROTECT,
-        related_name='luns'
+        related_name='luns',
+        blank=True,
+        null=True
     )
     name = models.CharField(
         max_length=100
@@ -58,17 +61,59 @@ class LUN(NetBoxModel):
         blank=True,
         verbose_name='WWN'
     )
+    
+    tenant = models.ForeignKey(
+        to=Tenant,
+        on_delete=models.PROTECT,
+        related_name='luns',
+        blank=True,
+        null=True
+    )
 
     class Meta:
         ordering = ('name',)
-        unique_together = ('storage_pool', 'name')
+        unique_together = ('tenant', 'name')
 
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.name} - {self.tenant.name}' if self.tenant else f'{self.name}'
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_storage:lun', args=[self.pk])
 
+
+class Quota(NetBoxModel):
+    volume_name = models.CharField(
+        max_length=100
+    )
+    size = models.PositiveBigIntegerField(
+        help_text='Size in bytes'
+    )
+    description = models.TextField(
+        blank=True
+    )
+    qtree_name = models.CharField(
+        max_length=100
+    )
+    svm_name = models.CharField(
+        max_length=100
+    )
+    tenant = models.ForeignKey(
+        to=Tenant,
+        on_delete=models.PROTECT,
+        related_name='storage_quotas',
+        blank=True,
+        null=True
+    )
+    
+    class Meta:
+        ordering = ('tenant', 'volume_name')
+        
+    def __str__(self):
+        return f'{self.volume_name} - {self.tenant.name}' if self.tenant else f'{self.volume_name}'
+    
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_storage:quota', args=[self.pk])
+    
 
 class Datastore(NetBoxModel):
     lun = models.ManyToManyField(
