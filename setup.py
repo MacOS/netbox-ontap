@@ -13,7 +13,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    author='Gabor Somogyvari',
+    author='Gabor Somogyvari, Leonhard Kreißig',
     url='https://github.com/viroge/netbox-storage',
     keywords=['netbox', 'netbox-plugin'],
     classifiers=[
