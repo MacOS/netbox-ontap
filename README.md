@@ -12,17 +12,45 @@ A [Netbox](https://github.com/netbox-community/netbox) plugin for storage relate
 
 # Install
 
-The plugin must be cloned to the plugin directory
+The plugin is not available via pip and must be installed from source.
 
+## Installation Steps
+
+1. Clone the plugin repository:
+```bash
+cd /opt/netbox
+git clone https://gitlab.devops.telekom.de/leonhard.kreissig/netbox-storage.git
 ```
-cd netbox/plugins
-git clone ...
+
+2. Install the plugin:
+```bash
+source /opt/netbox/venv/bin/activate
+cd netbox-storage
+pip install -e .
 ```
-Add netbox_storage to PLUGINS and INSTALLED_APPS in configuration.py:
+
+3. Add netbox_storage to PLUGINS in configuration.py:
+```python
+PLUGINS = ['netbox_storage']
 ```
-PLUGINS = ['netbox_storage',]
-INSTALLED_APPS = ['netbox_storage',]
+
+4. Run database migrations:
+```bash
+cd /opt/netbox/netbox
+python3 manage.py migrate
 ```
+
+5. Collect static files:
+```bash
+python3 manage.py collectstatic --no-input
+```
+
+6. Restart NetBox services:
+```bash
+sudo systemctl restart netbox netbox-rq
+```
+
+**Note:** The paths above assume a standard NetBox installation in `/opt/netbox`. Adjust paths according to your installation.
 
 # Usage
 
