@@ -29,8 +29,8 @@ class LUNSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='plugins-api:netbox_storage-api:lun-detail'
     )
-    storage_pool = StoragePoolSerializer(nested=True, allow_null=True)
-    tenant = TenantSerializer(nested=True, allow_null=True)
+    storage_pool = StoragePoolSerializer(nested=True, allow_null=True, allow_blank=True)
+    tenant = TenantSerializer(nested=True, allow_null=True, allow_blank=True)
 
     class Meta:
         model = LUN
