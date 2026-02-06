@@ -35,12 +35,12 @@ class LUNSerializer(NetBoxModelSerializer):
     class Meta:
         model = LUN
         fields = (
-            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'wwn',
+            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'wwn', 'svm_name',
             'tenant', 'description', 'tags', 'custom_fields',
-            'created', 'last_updated',
+            'created', 'last_updated', 
         )
         brief_fields = (
-            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'tenant',
+            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'svm_name', 'tenant',
         )
 
 

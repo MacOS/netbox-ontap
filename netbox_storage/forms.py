@@ -34,7 +34,7 @@ class LUNForm(NetBoxModelForm):
 
     class Meta:
         model = LUN
-        fields = ('storage_pool', 'tenant','name', 'size', 'wwn', 'description')
+        fields = ('storage_pool', 'tenant','name', 'size', 'wwn', 'svm_name', 'description')
 
 
 class QuotaForm(NetBoxModelForm):
@@ -124,6 +124,10 @@ class LUNFilterForm(NetBoxModelFilterSetForm):
     wwn = forms.CharField(
         required=False,
         label='WWN'
+    )
+    svm_name = forms.CharField(
+        required=False,
+        label='SVM Name'
     )
     
         
@@ -216,7 +220,7 @@ class LUNCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = LUN
-        fields = ('storage_pool', 'name', 'size', 'wwn', 'description')
+        fields = ('storage_pool', 'name', 'size', 'wwn', 'svm_name', 'description')
 
        
 class QuotaCSVForm(NetBoxModelImportForm):

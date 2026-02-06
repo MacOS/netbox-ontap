@@ -61,7 +61,11 @@ class LUN(NetBoxModel):
         blank=True,
         verbose_name='WWN'
     )
-    
+    svm_name = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name='SVM Name'
+    )
     tenant = models.ForeignKey(
         to=Tenant,
         on_delete=models.PROTECT,

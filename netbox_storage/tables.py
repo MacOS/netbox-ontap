@@ -52,7 +52,7 @@ class LUNTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = LUN
         fields = (
-            'pk', 'id', 'name', 'tenant', 'storage_pool', 'size', 'wwn', 'description', 'actions',
+            'pk', 'id', 'name', 'tenant', 'storage_pool', 'size', 'wwn', 'svm_name', 'description', 'actions',
         )
         default_columns = (
             'name', 'tenant', 'storage_pool', 'size',
