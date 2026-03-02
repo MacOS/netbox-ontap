@@ -34,7 +34,7 @@ class LUNForm(NetBoxModelForm):
 
     class Meta:
         model = LUN
-        fields = ('storage_pool', 'tenant','name', 'size', 'wwn', 'svm_name', 'description')
+        fields = ('storage_pool', 'tenant','name', 'size', 'wwn', 'svm_name', 'uuid', 'description')
 
 
 class QuotaForm(NetBoxModelForm):
@@ -45,7 +45,7 @@ class QuotaForm(NetBoxModelForm):
 
     class Meta:
         model = Quota
-        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'description')
+        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'uuid', 'description')
 
 
 
@@ -129,6 +129,10 @@ class LUNFilterForm(NetBoxModelFilterSetForm):
         required=False,
         label='SVM Name'
     )
+    uuid = forms.CharField(
+        required=False,
+        label="External UUID"
+    )
     
         
 class QuotaFilterForm(NetBoxModelFilterSetForm):
@@ -148,6 +152,10 @@ class QuotaFilterForm(NetBoxModelFilterSetForm):
     svm_name = forms.CharField(
         required=False,
         label='SVM Name'
+    )
+    uuid = forms.CharField(
+        required=False,
+        label="External UUID"
     )
 
 
@@ -220,7 +228,7 @@ class LUNCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = LUN
-        fields = ('storage_pool', 'name', 'size', 'wwn', 'svm_name', 'description')
+        fields = ('storage_pool', 'name', 'size', 'wwn', 'svm_name', 'uuid', 'description')
 
        
 class QuotaCSVForm(NetBoxModelImportForm):
@@ -232,7 +240,7 @@ class QuotaCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = Quota
-        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'description')
+        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'uuid', 'description')
 
 
 class DatastoreCSVForm(NetBoxModelImportForm):

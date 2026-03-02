@@ -73,6 +73,11 @@ class LUN(NetBoxModel):
         blank=True,
         null=True
     )
+    uuid = models.UUIDField(
+        blank=True,
+        null=True,
+        verbose_name="External UUID"
+    )
 
     class Meta:
         ordering = ('name',)
@@ -107,6 +112,11 @@ class Quota(NetBoxModel):
         related_name='storage_quotas',
         blank=True,
         null=True
+    )
+    uuid = models.UUIDField(
+        blank=True,
+        null=True,
+        verbose_name="External UUID"
     )
     
     class Meta:

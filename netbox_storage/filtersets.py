@@ -18,7 +18,7 @@ class LUNFilterSet(NetBoxModelFilterSet):
 
     class Meta:
         model = LUN
-        fields = ('id', 'tenant', 'storage_pool', 'name', 'wwn',)
+        fields = ('id', 'tenant', 'storage_pool', 'name', 'wwn', 'uuid',)
 
     def search(self, queryset, name, value):
         return queryset.filter(name__icontains=value)
@@ -27,7 +27,7 @@ class LUNFilterSet(NetBoxModelFilterSet):
 class QuotaFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = Quota
-        fields = ('id', 'volume_name', 'tenant', 'qtree_name', 'svm_name',)
+        fields = ('id', 'volume_name', 'tenant', 'qtree_name', 'svm_name', 'uuid',)
 
     def search(self, queryset, name, value):
         return queryset.filter(volume_name__icontains=value)

@@ -52,7 +52,7 @@ class LUNTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = LUN
         fields = (
-            'pk', 'id', 'name', 'tenant', 'storage_pool', 'size', 'wwn', 'svm_name', 'description', 'actions',
+            'pk', 'id', 'name', 'tenant', 'storage_pool', 'size', 'wwn', 'svm_name', 'uuid', 'description', 'actions',
         )
         default_columns = (
             'name', 'tenant', 'storage_pool', 'size',
@@ -73,7 +73,7 @@ class QuotaTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = Quota
         fields = (
-            'pk', 'id', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'description',
+            'pk', 'id', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'uuid', 'description',
             'actions'
         )
         default_columns = ('volume_name', 'tenant', 'size')

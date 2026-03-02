@@ -36,11 +36,11 @@ class LUNSerializer(NetBoxModelSerializer):
         model = LUN
         fields = (
             'id', 'url', 'display', 'name', 'size', 'storage_pool', 'wwn', 'svm_name',
-            'tenant', 'description', 'tags', 'custom_fields',
+            'tenant', 'uuid', 'description', 'tags', 'custom_fields',
             'created', 'last_updated', 
         )
         brief_fields = (
-            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'svm_name', 'tenant',
+            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'svm_name', 'tenant', 'uuid',
         )
 
 
@@ -53,11 +53,11 @@ class QuotaSerializer(NetBoxModelSerializer):
     class Meta:
         model = Quota
         fields = (
-            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'description',
+            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'uuid', 'description',
             'tags', 'custom_fields', 'created', 'last_updated',
         )
         brief_fields = (
-            'id', 'url', 'display', 'volume_name', 'size', 'tenant',
+            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'uuid'
         )
 
 
