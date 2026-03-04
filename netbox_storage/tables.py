@@ -63,7 +63,7 @@ class LUNTable(NetBoxTable):
 
 
 class QuotaTable(NetBoxTable):
-    name = tables.Column(
+    volume_name = tables.Column(
         linkify=True
     )
     tenant = tables.Column(
