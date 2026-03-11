@@ -80,7 +80,9 @@ class QuotaTable(NetBoxTable):
         default_columns = ('display_name', 'tenant', 'size')
         
     def render_size(self, value):
-        return filesizeformat(value)
+        if value != 0:
+            return filesizeformat(value)
+        return "Metering quota"
 
     def render_display_name(self, record):
         return str(record)
