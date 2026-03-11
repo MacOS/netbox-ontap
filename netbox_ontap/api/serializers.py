@@ -9,12 +9,45 @@ from virtualization.api.serializers import ClusterSerializer
 from ..models import LUN, QTree, Quota, SVM, Volume
 
 
+def _has_value(value):
+    return value not in (None, "")
+
+
+def _validate_id_uuid_match(initial_data, *, id_key, uuid_key, queryset, object_label):
+    id_value = initial_data.get(id_key)
+    uuid_value = initial_data.get(uuid_key)
+
+    if not (_has_value(id_value) and _has_value(uuid_value)):
+        return
+
+    # Let field-level validation handle malformed values and missing objects.
+    try:
+        obj_by_id = queryset.get(pk=id_value)
+        obj_by_uuid = queryset.get(uuid=uuid_value)
+    except Exception:
+        return
+
+    if obj_by_id.pk != obj_by_uuid.pk:
+        raise serializers.ValidationError(
+            {
+                id_key: f"{id_key} and {uuid_key} reference different {object_label} objects.",
+                uuid_key: f"{id_key} and {uuid_key} reference different {object_label} objects.",
+            }
+        )
+
+
 class SVMSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_ontap-api:svm-detail")
     cluster = ClusterSerializer(nested=True, read_only=True)
     tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
-    cluster_id = serializers.PrimaryKeyRelatedField(source="cluster", queryset=Cluster.objects.all(), write_only=True)
+    cluster_id = serializers.PrimaryKeyRelatedField(
+        source="cluster",
+        queryset=Cluster.objects.all(),
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
     tenant_id = serializers.PrimaryKeyRelatedField(
         source="tenant", queryset=Tenant.objects.all(), write_only=True, required=False, allow_null=True
     )
@@ -57,6 +90,28 @@ class VolumeSerializer(NetBoxModelSerializer):
         source="tenant", queryset=Tenant.objects.all(), write_only=True, required=False, allow_null=True
     )
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        initial_data = getattr(self, "initial_data", {})
+
+        _validate_id_uuid_match(
+            initial_data,
+            id_key="svm_id",
+            uuid_key="svm_uuid",
+            queryset=SVM.objects.all(),
+            object_label="SVM",
+        )
+
+        if self.instance is None and attrs.get("svm") is None:
+            raise serializers.ValidationError(
+                {
+                    "svm_id": "One of svm_id or svm_uuid is required.",
+                    "svm_uuid": "One of svm_id or svm_uuid is required.",
+                }
+            )
+
+        return attrs
+
     class Meta:
         model = Volume
         fields = (
@@ -94,6 +149,28 @@ class QTreeSerializer(NetBoxModelSerializer):
         required=False,
     )
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        initial_data = getattr(self, "initial_data", {})
+
+        _validate_id_uuid_match(
+            initial_data,
+            id_key="volume_id",
+            uuid_key="volume_uuid",
+            queryset=Volume.objects.all(),
+            object_label="Volume",
+        )
+
+        if self.instance is None and attrs.get("volume") is None:
+            raise serializers.ValidationError(
+                {
+                    "volume_id": "One of volume_id or volume_uuid is required.",
+                    "volume_uuid": "One of volume_id or volume_uuid is required.",
+                }
+            )
+
+        return attrs
+
     class Meta:
         model = QTree
         fields = (
@@ -129,6 +206,28 @@ class QuotaSerializer(NetBoxModelSerializer):
         required=False,
         allow_null=True,
     )
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        initial_data = getattr(self, "initial_data", {})
+
+        _validate_id_uuid_match(
+            initial_data,
+            id_key="qtree_id",
+            uuid_key="qtree_uuid",
+            queryset=QTree.objects.all(),
+            object_label="QTree",
+        )
+
+        if self.instance is None and attrs.get("qtree") is None:
+            raise serializers.ValidationError(
+                {
+                    "qtree_id": "One of qtree_id or qtree_uuid is required.",
+                    "qtree_uuid": "One of qtree_id or qtree_uuid is required.",
+                }
+            )
+
+        return attrs
 
     class Meta:
         model = Quota
@@ -175,6 +274,35 @@ class LUNSerializer(NetBoxModelSerializer):
         required=False,
         allow_null=True,
     )
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        initial_data = getattr(self, "initial_data", {})
+
+        _validate_id_uuid_match(
+            initial_data,
+            id_key="volume_id",
+            uuid_key="volume_uuid",
+            queryset=Volume.objects.all(),
+            object_label="Volume",
+        )
+        _validate_id_uuid_match(
+            initial_data,
+            id_key="qtree_id",
+            uuid_key="qtree_uuid",
+            queryset=QTree.objects.all(),
+            object_label="QTree",
+        )
+
+        if self.instance is None and attrs.get("volume") is None:
+            raise serializers.ValidationError(
+                {
+                    "volume_id": "One of volume_id or volume_uuid is required.",
+                    "volume_uuid": "One of volume_id or volume_uuid is required.",
+                }
+            )
+
+        return attrs
 
     class Meta:
         model = LUN
