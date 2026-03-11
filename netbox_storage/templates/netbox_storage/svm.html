@@ -1,0 +1,68 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+{% load helpers %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">SVM</h5>
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>{{ object.name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cluster</th>
+                    <td>
+                        {% if object.cluster %}
+                        <a href="{{ object.cluster.get_absolute_url }}">{{ object.cluster }}</a>
+                        {% else %}
+                        &mdash;
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Tenant</th>
+                    <td>
+                        {% if object.tenant %}
+                        <a href="{{ object.tenant.get_absolute_url }}">{{ object.tenant }}</a>
+                        {% else %}
+                        &mdash;
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">ONTAP SVM UUID</th>
+                    <td>{{ object.uuid|default:'—' }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Description</th>
+                    <td>{{ object.description|default:'—' }}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+        {% include 'inc/panels/tags.html' %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col col-md-12">
+        <div class="card">
+            <h5 class="card-header">Volumes</h5>
+            <div class="card-body table-responsive">
+                {% render_table volumes_table %}
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">LUNs</h5>
+            <div class="card-body table-responsive">
+                {% render_table luns_table %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

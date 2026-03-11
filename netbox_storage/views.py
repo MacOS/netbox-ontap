@@ -1,65 +1,174 @@
 from netbox.views import generic
+
 from . import filtersets, forms, models, tables
 
 
-#
-# StoragePool views
-#
-
-class StoragePoolView(generic.ObjectView):
-    queryset = models.StoragePool.objects.all()
+class SVMView(generic.ObjectView):
+    queryset = models.SVM.objects.all()
 
     def get_extra_context(self, request, instance):
-        table = tables.LUNTable(instance.luns.all())
-        table.configure(request)
+        volumes_table = tables.VolumeTable(instance.volumes.all())
+        volumes_table.configure(request)
+
+        luns_table = tables.LUNTable(instance.luns.all())
+        luns_table.configure(request)
 
         return {
-            'luns_table': table,
+            "volumes_table": volumes_table,
+            "luns_table": luns_table,
         }
 
 
-class StoragePoolListView(generic.ObjectListView):
-    queryset = models.StoragePool.objects.all()
-    table = tables.StoragePoolTable
-    filterset = filtersets.StoragePoolFilterSet
-    filterset_form = forms.StoragePoolFilterForm
+class SVMListView(generic.ObjectListView):
+    queryset = models.SVM.objects.all()
+    table = tables.SVMTable
+    filterset = filtersets.SVMFilterSet
+    filterset_form = forms.SVMFilterForm
 
 
-class StoragePoolEditView(generic.ObjectEditView):
-    queryset = models.StoragePool.objects.all()
-    form = forms.StoragePoolForm
+class SVMEditView(generic.ObjectEditView):
+    queryset = models.SVM.objects.all()
+    form = forms.SVMForm
 
 
-class StoragePoolDeleteView(generic.ObjectDeleteView):
-    queryset = models.StoragePool.objects.all()
+class SVMDeleteView(generic.ObjectDeleteView):
+    queryset = models.SVM.objects.all()
 
 
-class StoragePoolBulkDeleteView(generic.BulkDeleteView):
-    queryset = models.StoragePool.objects.all()
-    table = tables.StoragePoolTable
-    filterset = filtersets.StoragePoolFilterSet
+class SVMBulkDeleteView(generic.BulkDeleteView):
+    queryset = models.SVM.objects.all()
+    table = tables.SVMTable
+    filterset = filtersets.SVMFilterSet
 
 
-class StoragePoolImportView(generic.BulkImportView):
-    queryset = models.StoragePool.objects.all()
-    model_form = forms.StoragePoolCSVForm
-    table = tables.StoragePoolTable
+class SVMImportView(generic.BulkImportView):
+    queryset = models.SVM.objects.all()
+    model_form = forms.SVMCSVForm
+    table = tables.SVMTable
 
 
-#
-# LUN views
-#
+class VolumeView(generic.ObjectView):
+    queryset = models.Volume.objects.all()
+
+    def get_extra_context(self, request, instance):
+        qtrees_table = tables.QTreeTable(instance.qtrees.all())
+        qtrees_table.configure(request)
+
+        luns_table = tables.LUNTable(models.LUN.objects.filter(qtree__volume=instance).distinct())
+        luns_table.configure(request)
+
+        return {
+            "qtrees_table": qtrees_table,
+            "luns_table": luns_table,
+        }
+
+
+class VolumeListView(generic.ObjectListView):
+    queryset = models.Volume.objects.all()
+    table = tables.VolumeTable
+    filterset = filtersets.VolumeFilterSet
+    filterset_form = forms.VolumeFilterForm
+
+
+class VolumeEditView(generic.ObjectEditView):
+    queryset = models.Volume.objects.all()
+    form = forms.VolumeForm
+
+
+class VolumeDeleteView(generic.ObjectDeleteView):
+    queryset = models.Volume.objects.all()
+
+
+class VolumeBulkDeleteView(generic.BulkDeleteView):
+    queryset = models.Volume.objects.all()
+    table = tables.VolumeTable
+    filterset = filtersets.VolumeFilterSet
+
+
+class VolumeImportView(generic.BulkImportView):
+    queryset = models.Volume.objects.all()
+    model_form = forms.VolumeCSVForm
+    table = tables.VolumeTable
+
+
+class QTreeView(generic.ObjectView):
+    queryset = models.QTree.objects.all()
+
+    def get_extra_context(self, request, instance):
+        quotas_table = tables.QuotaTable(instance.quotas.all())
+        quotas_table.configure(request)
+
+        luns_table = tables.LUNTable(instance.luns.all())
+        luns_table.configure(request)
+
+        return {
+            "quotas_table": quotas_table,
+            "luns_table": luns_table,
+        }
+
+
+class QTreeListView(generic.ObjectListView):
+    queryset = models.QTree.objects.all()
+    table = tables.QTreeTable
+    filterset = filtersets.QTreeFilterSet
+    filterset_form = forms.QTreeFilterForm
+
+
+class QTreeEditView(generic.ObjectEditView):
+    queryset = models.QTree.objects.all()
+    form = forms.QTreeForm
+
+
+class QTreeDeleteView(generic.ObjectDeleteView):
+    queryset = models.QTree.objects.all()
+
+
+class QTreeBulkDeleteView(generic.BulkDeleteView):
+    queryset = models.QTree.objects.all()
+    table = tables.QTreeTable
+    filterset = filtersets.QTreeFilterSet
+
+
+class QTreeImportView(generic.BulkImportView):
+    queryset = models.QTree.objects.all()
+    model_form = forms.QTreeCSVForm
+    table = tables.QTreeTable
+
+
+class QuotaView(generic.ObjectView):
+    queryset = models.Quota.objects.all()
+
+
+class QuotaListView(generic.ObjectListView):
+    queryset = models.Quota.objects.all()
+    table = tables.QuotaTable
+    filterset = filtersets.QuotaFilterSet
+    filterset_form = forms.QuotaFilterForm
+
+
+class QuotaEditView(generic.ObjectEditView):
+    queryset = models.Quota.objects.all()
+    form = forms.QuotaForm
+
+
+class QuotaDeleteView(generic.ObjectDeleteView):
+    queryset = models.Quota.objects.all()
+
+
+class QuotaBulkDeleteView(generic.BulkDeleteView):
+    queryset = models.Quota.objects.all()
+    table = tables.QuotaTable
+    filterset = filtersets.QuotaFilterSet
+
+
+class QuotaImportView(generic.BulkImportView):
+    queryset = models.Quota.objects.all()
+    model_form = forms.QuotaCSVForm
+    table = tables.QuotaTable
+
 
 class LUNView(generic.ObjectView):
     queryset = models.LUN.objects.all()
-
-    def get_extra_context(self, request, instance):
-        datastores_table = tables.DatastoreTable(instance.datastores.all())
-        datastores_table.configure(request)
-
-        return {
-            'datastores_table': datastores_table,
-        }
 
 
 class LUNListView(generic.ObjectListView):
@@ -88,160 +197,3 @@ class LUNImportView(generic.BulkImportView):
     queryset = models.LUN.objects.all()
     model_form = forms.LUNCSVForm
     table = tables.LUNTable
-
-
-#
-# Quota views
-#
-
-class QuotaView(generic.ObjectView):
-    queryset = models.Quota.objects.all()
-
-class QuotaListView(generic.ObjectListView):
-    queryset = models.Quota.objects.all()
-    table = tables.QuotaTable
-    filterset = filtersets.QuotaFilterSet
-    filterset_form = forms.QuotaFilterForm
-    
-class QuotaEditView(generic.ObjectEditView):
-    queryset = models.Quota.objects.all()
-    form = forms.QuotaForm
-    
-class QuotaDeleteView(generic.ObjectDeleteView):
-    queryset = models.Quota.objects.all()
-
-
-class QuotaBulkDeleteView(generic.BulkDeleteView):
-    queryset = models.Quota.objects.all()
-    table = tables.QuotaTable
-    filterset = filtersets.QuotaFilterSet
-
-
-class QuotaImportView(generic.BulkImportView):
-    queryset = models.Quota.objects.all()
-    model_form = forms.QuotaCSVForm
-    table = tables.QuotaTable
-
-
-#
-# StorageLUNGroup views
-#
-
-class DatastoreView(generic.ObjectView):
-    queryset = models.Datastore.objects.all()
-
-    def get_extra_context(self, request, instance):
-        luns_table = tables.LUNTable(instance.lun.all())
-        luns_table.configure(request)
-
-        sessions_table = tables.StorageSessionTable(instance.storage_sessions.all())
-        sessions_table.configure(request)
-
-        vmdks_table = tables.VMDKTable(instance.vmdks.all())
-        vmdks_table.configure(request)
-
-        return {
-            'luns_table': luns_table,
-            'sessions_table': sessions_table,
-            'vmdks_table': vmdks_table,
-        }
-
-
-class DatastoreListView(generic.ObjectListView):
-    queryset = models.Datastore.objects.all()
-    table = tables.DatastoreTable
-    filterset = filtersets.DatastoreFilterSet
-    filterset_form = forms.DatastoreFilterForm
-
-
-class DatastoreEditView(generic.ObjectEditView):
-    queryset = models.Datastore.objects.all()
-    form = forms.DatastoreForm
-
-
-class DatastoreDeleteView(generic.ObjectDeleteView):
-    queryset = models.Datastore.objects.all()
-
-
-class DatastoreBulkDeleteView(generic.BulkDeleteView):
-    queryset = models.Datastore.objects.all()
-    table = tables.DatastoreTable
-    filterset = filtersets.DatastoreFilterSet
-
-
-class DatastoreImportView(generic.BulkImportView):
-    queryset = models.Datastore.objects.all()
-    model_form = forms.DatastoreCSVForm
-    table = tables.DatastoreTable
-
-
-#
-# StorageSession views
-#
-
-class StorageSessionView(generic.ObjectView):
-    queryset = models.StorageSession.objects.all()
-
-
-class StorageSessionListView(generic.ObjectListView):
-    queryset = models.StorageSession.objects.all()
-    table = tables.StorageSessionTable
-    filterset = filtersets.StorageSessionFilterSet
-    filterset_form = forms.StorageSessionFilterForm
-
-
-class StorageSessionEditView(generic.ObjectEditView):
-    queryset = models.StorageSession.objects.all()
-    form = forms.StorageSessionForm
-
-
-class StorageSessionDeleteView(generic.ObjectDeleteView):
-    queryset = models.StorageSession.objects.all()
-
-
-class StorageSessionBulkDeleteView(generic.BulkDeleteView):
-    queryset = models.StorageSession.objects.all()
-    table = tables.StorageSessionTable
-    filterset = filtersets.StorageSessionFilterSet
-
-
-class StorageSessionImportView(generic.BulkImportView):
-    queryset = models.StorageSession.objects.all()
-    model_form = forms.StorageSessionCSVForm
-    table = tables.StorageSessionTable
-
-
-#
-# VMDK views
-#
-
-class VMDKView(generic.ObjectView):
-    queryset = models.VMDK.objects.all()
-
-
-class VMDKListView(generic.ObjectListView):
-    queryset = models.VMDK.objects.all()
-    table = tables.VMDKTable
-    filterset = filtersets.VMDKFilterSet
-    filterset_form = forms.VMDKFilterForm
-
-
-class VMDKEditView(generic.ObjectEditView):
-    queryset = models.VMDK.objects.all()
-    form = forms.VMDKForm
-
-
-class VMDKDeleteView(generic.ObjectDeleteView):
-    queryset = models.VMDK.objects.all()
-
-
-class VMDKBulkDeleteView(generic.BulkDeleteView):
-    queryset = models.VMDK.objects.all()
-    filterset = filtersets.VMDKFilterSet
-    table = tables.VMDKTable
-
-
-class VMDKImportView(generic.BulkImportView):
-    queryset = models.VMDK.objects.all()
-    model_form = forms.VMDKCSVForm
-    table = tables.VMDKTable

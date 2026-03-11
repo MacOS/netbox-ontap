@@ -1,23 +1,37 @@
 from django.db import models
 from django.urls import reverse
-from django.db.models import Sum
+from django.core.exceptions import ValidationError
 from netbox.models import NetBoxModel
 from tenancy.models import Tenant
+from virtualization.models import Cluster
 
-
-class StoragePool(NetBoxModel):
+class SVM(NetBoxModel):
     name = models.CharField(
         max_length=100
     )
-    size = models.PositiveBigIntegerField(
-        help_text='Size in bytes'
-    )
-    device = models.ForeignKey(
-        to='dcim.Device',
-        on_delete=models.PROTECT
-    )
     description = models.TextField(
         blank=True
+    )
+    uuid = models.UUIDField(
+        verbose_name="ONTAP SVM UUID",
+        blank=True,
+        null=True,
+    )
+    
+    cluster = models.ForeignKey(
+        to=Cluster,
+        on_delete=models.PROTECT,
+        related_name='svms',
+        blank=True,
+        null=True
+    )
+    
+    tenant = models.ForeignKey(
+        to=Tenant,
+        on_delete=models.PROTECT,
+        related_name='svms',
+        blank=True,
+        null=True
     )
 
     class Meta:
@@ -27,26 +41,125 @@ class StoragePool(NetBoxModel):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:storagepool', args=[self.pk])
+        return reverse('plugins:netbox_storage:svm', args=[self.pk])
+    
+class Volume(NetBoxModel):
+    prerequisite_models = (
+        'netbox_storage.SVM',
+    )
 
-    def get_utilization(self):
-        sum_alloc_size = self.luns.all().aggregate(Sum('size'))['size__sum']
-        if sum_alloc_size:
-            utilization = float(sum_alloc_size) / self.size * 100
-        else:
-            utilization = 0
-
-        return utilization
-
-
-class LUN(NetBoxModel):
-    storage_pool = models.ForeignKey(
-        to=StoragePool,
+    name = models.CharField(
+        max_length=100
+    )
+    description = models.TextField(
+        blank=True
+    )
+    tenant = models.ForeignKey(
+        to=Tenant,
         on_delete=models.PROTECT,
-        related_name='luns',
+        related_name='volumes',
         blank=True,
         null=True
     )
+    uuid = models.UUIDField(
+        blank=True,
+        null=True,
+        verbose_name="ONTAP Volume UUID"
+    )
+    svm = models.ForeignKey(
+        to=SVM,
+        on_delete=models.PROTECT,
+        related_name='volumes'
+    )
+    class Meta:
+        ordering = ('name',)
+        unique_together = ('tenant', 'name')
+
+    def clean(self):
+        super().clean()
+        if self.tenant and self.svm and self.svm.tenant and self.tenant_id != self.svm.tenant_id:
+            raise ValidationError({
+                'tenant': 'Tenant of Volume cannot differ from Tenant of SVM.'
+            })
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_storage:volume', args=[self.pk])
+   
+class QTree(NetBoxModel):
+    prerequisite_models = (
+        'netbox_storage.Volume',
+    )
+
+    name = models.CharField(
+        max_length=100
+    )
+    volume = models.ForeignKey(
+        to='Volume',
+        on_delete=models.PROTECT,
+        related_name='qtrees'
+    )
+    description = models.TextField(
+        blank=True
+    )
+    uuid = models.UUIDField(
+        verbose_name="ONTAP QTree UUID",
+        blank=True,
+        null=True,
+    )
+    class Meta:
+        ordering = ('name', 'volume__name')
+        unique_together = ('volume', 'name')
+
+    def __str__(self):
+        return f'{self.volume.name}/{self.name}'
+
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_storage:qtree', args=[self.pk])
+
+class Quota(NetBoxModel):
+    prerequisite_models = (
+        'netbox_storage.QTree',
+    )
+    size = models.PositiveBigIntegerField(
+        help_text='Size in bytes',
+        blank=True,
+        null=True
+    )
+    description = models.TextField(
+        blank=True
+    )
+    qtree = models.ForeignKey(
+        to=QTree,
+        on_delete=models.PROTECT,
+        related_name='quotas',
+    )
+    index = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name="Quota Index"
+    )
+    
+    class Meta:
+        ordering = ('qtree__volume__name', 'index')
+        
+    def __str__(self):
+        if self.qtree:
+            return f'{self.qtree.volume.name} - {self.qtree.name}'
+        return 'Volume level quota'
+    
+    def get_absolute_url(self):
+        return reverse('plugins:netbox_storage:quota', args=[self.pk])
+    
+    @property
+    def display_name(self):
+        return str(self)
+    
+    
+class LUN(NetBoxModel):
     name = models.CharField(
         max_length=100
     )
@@ -61,11 +174,21 @@ class LUN(NetBoxModel):
         blank=True,
         verbose_name='WWN'
     )
-    svm_name = models.CharField(
-        max_length=100,
+    svm = models.ForeignKey(
+        to=SVM,
+        on_delete=models.PROTECT,
+        related_name='luns',
         blank=True,
-        verbose_name='SVM Name'
+        null=True
     )
+    qtree = models.ForeignKey(
+        to=QTree,
+        on_delete=models.PROTECT,
+        related_name='luns',
+        blank=True,
+        null=True
+    )
+    
     tenant = models.ForeignKey(
         to=Tenant,
         on_delete=models.PROTECT,
@@ -76,157 +199,31 @@ class LUN(NetBoxModel):
     uuid = models.UUIDField(
         blank=True,
         null=True,
-        verbose_name="External UUID"
+        verbose_name="ONTAP LUN UUID"
     )
 
     class Meta:
         ordering = ('name',)
         unique_together = ('tenant', 'name')
 
+    def clean(self):
+        super().clean()
+        errors = {}
+
+        if self.tenant and self.svm and self.svm.tenant and self.tenant_id != self.svm.tenant_id:
+            errors['tenant'] = 'Tenant of LUN cannot differ from Tenant of SVM.'
+
+        if self.tenant and self.qtree and self.qtree.volume.tenant and self.tenant_id != self.qtree.volume.tenant_id:
+            errors['tenant'] = 'Tenant of LUN cannot differ from Tenant of QTree/Volume.'
+
+        if self.svm and self.qtree and self.qtree.volume.svm_id != self.svm_id:
+            errors['qtree'] = 'QTree must belong to the same SVM as the LUN.'
+
+        if errors:
+            raise ValidationError(errors)
+
     def __str__(self):
         return f'{self.name} - {self.tenant.name}' if self.tenant else f'{self.name}'
 
     def get_absolute_url(self):
         return reverse('plugins:netbox_storage:lun', args=[self.pk])
-
-
-class Quota(NetBoxModel):
-    volume_name = models.CharField(
-        max_length=100
-    )
-    size = models.PositiveBigIntegerField(
-        help_text='Size in bytes',
-        blank=True,
-        null=True
-    )
-    description = models.TextField(
-        blank=True
-    )
-    qtree_name = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
-    )
-    svm_name = models.CharField(
-        max_length=100
-    )
-    tenant = models.ForeignKey(
-        to=Tenant,
-        on_delete=models.PROTECT,
-        related_name='storage_quotas',
-        blank=True,
-        null=True
-    )
-    volume_uuid = models.UUIDField(
-        blank=True,
-        null=True,
-        verbose_name="Volume UUID"
-    )
-    index = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name="Quota Index"
-    )
-    
-    class Meta:
-        ordering = ('tenant', 'volume_name')
-        
-    def __str__(self):
-        tree = self.qtree_name if self.qtree_name else "Volume level"
-        return f'{self.volume_name} - {tree}'
-    
-    def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:quota', args=[self.pk])
-    
-    @property
-    def display_name(self):
-        return str(self)
-
-class Datastore(NetBoxModel):
-    lun = models.ManyToManyField(
-        to=LUN,
-        related_name='datastores'
-    )
-    name = models.CharField(
-        max_length=100
-    )
-    description = models.TextField(
-        blank=True
-    )
-
-    class Meta:
-        ordering = ('name',)
-
-    def __str__(self):
-        return f'{self.name}'
-
-    def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:datastore', args=[self.pk])
-
-    def get_utilization(self):
-        sum_lun_size = self.lun.all().aggregate(Sum('size'))['size__sum']
-        sum_vmdk_size = self.vmdks.all().aggregate(Sum('size'))['size__sum']
-        if sum_lun_size and sum_vmdk_size:
-            utilization = float(sum_vmdk_size) / float(sum_lun_size) * 100
-        else:
-            utilization = 0
-
-        return utilization
-
-
-class StorageSession(NetBoxModel):
-    name = models.CharField(
-        max_length=100
-    )
-    cluster = models.ForeignKey(
-        to='virtualization.cluster',
-        on_delete=models.PROTECT,
-        related_name='storage_sessions'
-    )
-    datastores = models.ManyToManyField(
-        to=Datastore,
-        related_name='storage_sessions'
-    )
-    description = models.TextField(
-        blank=True
-    )
-
-    class Meta:
-        ordering = ('name',)
-
-    def __str__(self):
-        return f'{self.name}'
-
-    def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:storagesession', args=[self.pk])
-
-
-class VMDK(NetBoxModel):
-    vm = models.ForeignKey(
-        to='virtualization.virtualmachine',
-        on_delete=models.PROTECT,
-        related_name='vmdks',
-        verbose_name='Virtual Machine'
-    )
-    name = models.CharField(
-        max_length=100
-    )
-    datastore = models.ForeignKey(
-        to=Datastore,
-        related_name='vmdks',
-        on_delete=models.PROTECT
-    )
-    size = models.PositiveBigIntegerField(
-        help_text='Size in bytes'
-    )
-
-    class Meta:
-        ordering = ('datastore', 'name',)
-        verbose_name = 'VMDK'
-
-    def __str__(self):
-        return f'{self.vm}-{self.datastore}-{self.name}'
-
-    def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:vmdk', args=[self.pk])

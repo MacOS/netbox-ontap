@@ -1,5 +1,4 @@
-{% extends 'generic/object.html' %} {% load render_table from django_tables2 %}
-{% load helpers %} {% block content %}
+{% extends 'generic/object.html' %} {% load helpers %} {% block content %}
 <div class="row mb-3">
     <div class="col col-md-6">
         <div class="card">
@@ -21,11 +20,21 @@
                 </tr>
 
                 <tr>
-                    <th scope="row">Storage pool</th>
+                    <th scope="row">SVM</th>
                     <td>
-                        {% if object.storage_pool %}
-                        <a href="{{ object.storage_pool.get_absolute_url }}"
-                            >{{ object.storage_pool }}</a
+                        {% if object.svm %}
+                        <a href="{{ object.svm.get_absolute_url }}"
+                            >{{ object.svm }}</a
+                        >
+                        {% else %} &mdash; {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">QTree</th>
+                    <td>
+                        {% if object.qtree %}
+                        <a href="{{ object.qtree.get_absolute_url }}"
+                            >{{ object.qtree }}</a
                         >
                         {% else %} &mdash; {% endif %}
                     </td>
@@ -39,11 +48,7 @@
                     <td>{{ object.wwn }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">SVM Name</th>
-                    <td>{{ object.svm_name }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">External UUID</th>
+                    <th scope="row">ONTAP LUN UUID</th>
                     <td>{{ object.uuid }}</td>
                 </tr>
                 <tr>
@@ -55,15 +60,5 @@
         {% include 'inc/panels/custom_fields.html' %}
     </div>
     <div class="col col-md-6">{% include 'inc/panels/tags.html' %}</div>
-</div>
-<div class="row">
-    <div class="col col-md-12">
-        <div class="card">
-            <h5 class="card-header">LUNs</h5>
-            <div class="card-body table-responsive">
-                {% render_table datastores_table %}
-            </div>
-        </div>
-    </div>
 </div>
 {% endblock content %}

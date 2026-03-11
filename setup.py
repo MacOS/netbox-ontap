@@ -5,8 +5,8 @@ with open('README.md', 'r') as f:
 
 setup(
     name='netbox-storage-plugin',
-    version='50.8.1',
-    description='NetBox storage plugin',
+    version='1.0.0',
+    description='NetBox ONTAP plugin',
     long_description=long_description,
     long_description_content_type='text/markdown',
     install_requires=[],
@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     author='Gabor Somogyvari, Leonhard Kreißig',
-    url='https://github.com/viroge/netbox-storage',
+    url='https://gitlab.devops.telekom.de/leonhard.kreissig/netbox-storage',
     keywords=['netbox', 'netbox-plugin'],
     classifiers=[
         'Programming Language :: Python :: 3',

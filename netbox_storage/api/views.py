@@ -1,48 +1,34 @@
 from netbox.api.viewsets import NetBoxModelViewSet
 
 from .. import filtersets, models
-from .serializers import StoragePoolSerializer, LUNSerializer, QuotaSerializer, StorageSessionSerializer, DatastoreSerializer, VMDKSerializer
+from .serializers import LUNSerializer, QTreeSerializer, QuotaSerializer, SVMSerializer, VolumeSerializer
 
 
-class StoragePoolViewSet(NetBoxModelViewSet):
-    queryset = models.StoragePool.objects.prefetch_related('device', 'tags')
-    serializer_class = StoragePoolSerializer
-    filterset_class = filtersets.StoragePoolFilterSet
+class SVMViewSet(NetBoxModelViewSet):
+    queryset = models.SVM.objects.select_related("cluster", "tenant").prefetch_related("tags")
+    serializer_class = SVMSerializer
+    filterset_class = filtersets.SVMFilterSet
 
 
-class LUNViewSet(NetBoxModelViewSet):
-    queryset = models.LUN.objects.prefetch_related(
-        'storage_pool', 'tenant', 'tags'
-    )
-    serializer_class = LUNSerializer
-    filterset_class = filtersets.LUNFilterSet
+class VolumeViewSet(NetBoxModelViewSet):
+    queryset = models.Volume.objects.select_related("svm", "tenant").prefetch_related("tags")
+    serializer_class = VolumeSerializer
+    filterset_class = filtersets.VolumeFilterSet
+
+
+class QTreeViewSet(NetBoxModelViewSet):
+    queryset = models.QTree.objects.select_related("volume", "volume__svm", "volume__tenant").prefetch_related("tags")
+    serializer_class = QTreeSerializer
+    filterset_class = filtersets.QTreeFilterSet
 
 
 class QuotaViewSet(NetBoxModelViewSet):
-    queryset = models.Quota.objects.prefetch_related('tenant', 'tags')
+    queryset = models.Quota.objects.select_related("qtree", "qtree__volume", "qtree__volume__svm").prefetch_related("tags")
     serializer_class = QuotaSerializer
     filterset_class = filtersets.QuotaFilterSet
 
 
-class DatastoreViewSet(NetBoxModelViewSet):
-    queryset = models.Datastore.objects.prefetch_related(
-        'lun', 'tags'
-    )
-    serializer_class = DatastoreSerializer
-    filterset_class = filtersets.DatastoreFilterSet
-
-
-class StorageSessionViewSet(NetBoxModelViewSet):
-    queryset = models.StorageSession.objects.prefetch_related(
-        'cluster', 'datastores', 'tags'
-    )
-    serializer_class = StorageSessionSerializer
-    filterset_class = filtersets.StorageSessionFilterSet
-
-
-class VMDKViewSet(NetBoxModelViewSet):
-    queryset = models.VMDK.objects.prefetch_related(
-        'datastore', 'vm', 'tags'
-    )
-    serializer_class = VMDKSerializer
-    filterset_class = filtersets.VMDKFilterSet
+class LUNViewSet(NetBoxModelViewSet):
+    queryset = models.LUN.objects.select_related("tenant", "svm", "qtree", "qtree__volume").prefetch_related("tags")
+    serializer_class = LUNSerializer
+    filterset_class = filtersets.LUNFilterSet

@@ -1,72 +1,76 @@
 from netbox.filtersets import NetBoxModelFilterSet
-import django_filters
-from virtualization.models import VirtualMachine
-from .models import StoragePool, LUN, StorageSession, Datastore, VMDK, Quota
+from django.db.models import Q
+
+from .models import LUN, QTree, Quota, SVM, Volume
 
 
-class StoragePoolFilterSet(NetBoxModelFilterSet):
-
+class SVMFilterSet(NetBoxModelFilterSet):
     class Meta:
-        model = StoragePool
-        fields = ('id', 'name', 'device')
+        model = SVM
+        fields = ("id", "name", "cluster", "tenant", "uuid")
 
     def search(self, queryset, name, value):
-        return queryset.filter(name__icontains=value)
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(uuid__icontains=value)
+        )
 
 
-class LUNFilterSet(NetBoxModelFilterSet):
-
+class VolumeFilterSet(NetBoxModelFilterSet):
     class Meta:
-        model = LUN
-        fields = ('id', 'tenant', 'storage_pool', 'name', 'wwn', 'uuid',)
+        model = Volume
+        fields = ("id", "name", "svm", "tenant", "uuid")
 
     def search(self, queryset, name, value):
-        return queryset.filter(name__icontains=value)
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(uuid__icontains=value)
+            | Q(svm__name__icontains=value)
+            | Q(svm__uuid__icontains=value)
+        )
+
+
+class QTreeFilterSet(NetBoxModelFilterSet):
+    class Meta:
+        model = QTree
+        fields = ("id", "name", "volume", "uuid")
+
+    def search(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(uuid__icontains=value)
+            | Q(volume__name__icontains=value)
+            | Q(volume__uuid__icontains=value)
+        )
 
 
 class QuotaFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = Quota
-        fields = ('id', 'volume_name', 'tenant', 'qtree_name', 'svm_name', 'volume_uuid', 'index')
+        fields = ("id", "qtree", "index")
 
     def search(self, queryset, name, value):
-        return queryset.filter(volume_name__icontains=value)
-
-
-class DatastoreFilterSet(NetBoxModelFilterSet):
-    reachable_by_vm = django_filters.ModelMultipleChoiceFilter(
-        field_name='storage_sessions__cluster__virtual_machines',
-        queryset=VirtualMachine.objects.all(),
-        label='Reachable by these Virtual Machines'
-    )
-
-    class Meta:
-        model = Datastore
-        fields = ('id', 'lun', 'name', 'reachable_by_vm',)
-
-    def search(self, queryset, name, value):
-        return queryset.filter(name__icontains=value)
-
-
-class StorageSessionFilterSet(NetBoxModelFilterSet):
-
-    class Meta:
-        model = StorageSession
-        fields = (
-            'id', 'name', 'cluster', 'datastores',
+        return queryset.filter(
+            Q(index__icontains=value)
+            | Q(qtree__name__icontains=value)
+            | Q(qtree__uuid__icontains=value)
+            | Q(qtree__volume__name__icontains=value)
+            | Q(qtree__volume__uuid__icontains=value)
         )
 
-    def search(self, queryset, name, value):
-        return queryset.filter(name__icontains=value)
 
-
-class VMDKFilterSet(NetBoxModelFilterSet):
-
+class LUNFilterSet(NetBoxModelFilterSet):
     class Meta:
-        model = VMDK
-        fields = (
-            'id', 'name', 'vm', 'datastore',
-        )
+        model = LUN
+        fields = ("id", "name", "tenant", "svm", "qtree", "wwn", "uuid")
 
     def search(self, queryset, name, value):
-        return queryset.filter(name__icontains=value)
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(uuid__icontains=value)
+            | Q(wwn__icontains=value)
+            | Q(svm__name__icontains=value)
+            | Q(svm__uuid__icontains=value)
+            | Q(qtree__name__icontains=value)
+            | Q(qtree__uuid__icontains=value)
+        )

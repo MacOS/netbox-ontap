@@ -5,11 +5,10 @@ from . import views
 app_name = 'netbox_storage'
 
 router = NetBoxRouter()
-router.register('storagepool', views.StoragePoolViewSet)
-router.register('lun', views.LUNViewSet)
+router.register('svm', views.SVMViewSet)
+router.register('volume', views.VolumeViewSet)
+router.register('qtree', views.QTreeViewSet)
 router.register('quota', views.QuotaViewSet)
-router.register('datastore', views.DatastoreViewSet)
-router.register('storagesession', views.StorageSessionViewSet)
-router.register('vmdk', views.VMDKViewSet)
+router.register('lun', views.LUNViewSet)
 
 urlpatterns = router.urls

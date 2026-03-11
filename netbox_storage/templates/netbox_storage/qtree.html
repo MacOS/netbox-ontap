@@ -1,0 +1,60 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+{% load helpers %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">QTree</h5>
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>{{ object.name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Volume</th>
+                    <td>
+                        <a href="{{ object.volume.get_absolute_url }}">{{ object.volume }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">SVM</th>
+                    <td>
+                        <a href="{{ object.volume.svm.get_absolute_url }}">{{ object.volume.svm }}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">ONTAP QTree UUID</th>
+                    <td>{{ object.uuid|default:'—' }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Description</th>
+                    <td>{{ object.description|default:'—' }}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+        {% include 'inc/panels/tags.html' %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col col-md-12">
+        <div class="card">
+            <h5 class="card-header">Quotas</h5>
+            <div class="card-body table-responsive">
+                {% render_table quotas_table %}
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">LUNs</h5>
+            <div class="card-body table-responsive">
+                {% render_table luns_table %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

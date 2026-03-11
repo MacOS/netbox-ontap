@@ -1,0 +1,35 @@
+<div class="card">
+    <h5 class="card-header">Storage Objects</h5>
+    <div class="card-body">
+        <div class="mb-3">
+            <strong>SVMs</strong>
+            <ul class="mb-0 mt-1">
+                {% for svm in svms %}
+                <li><a href="{{ svm.get_absolute_url }}">{{ svm.name }}</a></li>
+                {% empty %}
+                <li class="text-muted">No SVMs assigned to this cluster.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="mb-3">
+            <strong>Volumes</strong>
+            <ul class="mb-0 mt-1">
+                {% for volume in volumes %}
+                <li><a href="{{ volume.get_absolute_url }}">{{ volume.name }}</a></li>
+                {% empty %}
+                <li class="text-muted">No volumes assigned to this cluster.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <strong>LUNs</strong>
+            <ul class="mb-0 mt-1">
+                {% for lun in luns %}
+                <li><a href="{{ lun.get_absolute_url }}">{{ lun.name }}</a></li>
+                {% empty %}
+                <li class="text-muted">No LUNs assigned to this cluster.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

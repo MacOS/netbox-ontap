@@ -1,122 +1,207 @@
 from rest_framework import serializers
 
-from virtualization.api.serializers import ClusterSerializer, VirtualMachineSerializer
-from dcim.api.serializers import DeviceSerializer
-from tenancy.api.serializers import TenantSerializer
 from netbox.api.serializers import NetBoxModelSerializer
-from netbox.api.fields import SerializedPKRelatedField
-from ..models import StoragePool, LUN, Quota, StorageSession, Datastore, VMDK
+from tenancy.models import Tenant
+from tenancy.api.serializers import TenantSerializer
+from virtualization.models import Cluster
+from virtualization.api.serializers import ClusterSerializer
+
+from ..models import LUN, QTree, Quota, SVM, Volume
 
 
-class StoragePoolSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:netbox_storage-api:storagepool-detail'
+class SVMSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:svm-detail")
+    cluster = ClusterSerializer(nested=True, read_only=True)
+    tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
+
+    cluster_id = serializers.PrimaryKeyRelatedField(source="cluster", queryset=Cluster.objects.all(), write_only=True)
+    tenant_id = serializers.PrimaryKeyRelatedField(
+        source="tenant", queryset=Tenant.objects.all(), write_only=True, required=False, allow_null=True
     )
-    device = DeviceSerializer(nested=True, required=False)
 
     class Meta:
-        model = StoragePool
+        model = SVM
         fields = (
-            'id', 'url', 'display', 'name', 'size', 'device', 'description',
-            'tags', 'custom_fields', 'created', 'last_updated',
+            "id",
+            "url",
+            "display",
+            "name",
+            "cluster",
+            "cluster_id",
+            "tenant",
+            "tenant_id",
+            "uuid",
+            "description",
+            "tags",
+            "custom_fields",
+            "created",
+            "last_updated",
         )
-        brief_fields = (
-            'id', 'url', 'display', 'name', 'size', 'device',
-        )
+        brief_fields = ("id", "url", "display", "name", "cluster", "tenant", "uuid")
 
 
-class LUNSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:netbox_storage-api:lun-detail'
+class VolumeSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:volume-detail")
+    svm = SVMSerializer(nested=True, read_only=True)
+    tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
+
+    svm_id = serializers.PrimaryKeyRelatedField(source="svm", queryset=SVM.objects.all(), write_only=True, required=False)
+    svm_uuid = serializers.SlugRelatedField(
+        source="svm",
+        queryset=SVM.objects.exclude(uuid__isnull=True),
+        slug_field="uuid",
+        write_only=True,
+        required=False,
     )
-    storage_pool = StoragePoolSerializer(nested=True, required=False)
-    tenant = TenantSerializer(nested=True, required=False)
+    tenant_id = serializers.PrimaryKeyRelatedField(
+        source="tenant", queryset=Tenant.objects.all(), write_only=True, required=False, allow_null=True
+    )
 
     class Meta:
-        model = LUN
+        model = Volume
         fields = (
-            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'wwn', 'svm_name',
-            'tenant', 'uuid', 'description', 'tags', 'custom_fields',
-            'created', 'last_updated', 
+            "id",
+            "url",
+            "display",
+            "name",
+            "svm",
+            "svm_id",
+            "svm_uuid",
+            "tenant",
+            "tenant_id",
+            "uuid",
+            "description",
+            "tags",
+            "custom_fields",
+            "created",
+            "last_updated",
         )
-        brief_fields = (
-            'id', 'url', 'display', 'name', 'size', 'storage_pool', 'svm_name', 'tenant', 'uuid',
+        brief_fields = ("id", "url", "display", "name", "svm", "tenant", "uuid")
+
+
+class QTreeSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:qtree-detail")
+    volume = VolumeSerializer(nested=True, read_only=True)
+
+    volume_id = serializers.PrimaryKeyRelatedField(
+        source="volume", queryset=Volume.objects.all(), write_only=True, required=False
+    )
+    volume_uuid = serializers.SlugRelatedField(
+        source="volume",
+        queryset=Volume.objects.exclude(uuid__isnull=True),
+        slug_field="uuid",
+        write_only=True,
+        required=False,
+    )
+
+    class Meta:
+        model = QTree
+        fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "volume",
+            "volume_id",
+            "volume_uuid",
+            "uuid",
+            "description",
+            "tags",
+            "custom_fields",
+            "created",
+            "last_updated",
         )
+        brief_fields = ("id", "url", "display", "name", "volume", "uuid")
 
 
 class QuotaSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:netbox_storage-api:quota-detail'
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:quota-detail")
+    qtree = QTreeSerializer(nested=True, required=False, allow_null=True, read_only=True)
+
+    qtree_id = serializers.PrimaryKeyRelatedField(
+        source="qtree", queryset=QTree.objects.all(), write_only=True, required=False, allow_null=True
     )
-    tenant = TenantSerializer(nested=True, required=False)
+    qtree_uuid = serializers.SlugRelatedField(
+        source="qtree",
+        queryset=QTree.objects.exclude(uuid__isnull=True),
+        slug_field="uuid",
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
 
     class Meta:
         model = Quota
         fields = (
-            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'volume_uuid', 'index', 'description',
-            'tags', 'custom_fields', 'created', 'last_updated',
+            "id",
+            "url",
+            "display",
+            "qtree",
+            "qtree_id",
+            "qtree_uuid",
+            "size",
+            "index",
+            "description",
+            "tags",
+            "custom_fields",
+            "created",
+            "last_updated",
         )
-        brief_fields = (
-            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'volume_uuid', 'index'
-        )
+        brief_fields = ("id", "url", "display", "qtree", "size", "index")
 
 
-class DatastoreSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:netbox_storage-api:datastore-detail'
+class LUNSerializer(NetBoxModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:lun-detail")
+    tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
+    svm = SVMSerializer(nested=True, required=False, allow_null=True, read_only=True)
+    qtree = QTreeSerializer(nested=True, required=False, allow_null=True, read_only=True)
+
+    tenant_id = serializers.PrimaryKeyRelatedField(
+        source="tenant", queryset=Tenant.objects.all(), write_only=True, required=False, allow_null=True
     )
-    lun = SerializedPKRelatedField(
-        queryset=LUN.objects.all(),
-        serializer=LUNSerializer,
-        many=True
+    svm_id = serializers.PrimaryKeyRelatedField(source="svm", queryset=SVM.objects.all(), write_only=True, required=False, allow_null=True)
+    svm_uuid = serializers.SlugRelatedField(
+        source="svm",
+        queryset=SVM.objects.exclude(uuid__isnull=True),
+        slug_field="uuid",
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
+    qtree_id = serializers.PrimaryKeyRelatedField(
+        source="qtree", queryset=QTree.objects.all(), write_only=True, required=False, allow_null=True
+    )
+    qtree_uuid = serializers.SlugRelatedField(
+        source="qtree",
+        queryset=QTree.objects.exclude(uuid__isnull=True),
+        slug_field="uuid",
+        write_only=True,
+        required=False,
+        allow_null=True,
     )
 
     class Meta:
-        model = Datastore
+        model = LUN
         fields = (
-            'id', 'url', 'display', 'name', 'lun',
-            'description', 'tags', 'custom_fields', 'created', 'last_updated',
+            "id",
+            "url",
+            "display",
+            "name",
+            "size",
+            "tenant",
+            "tenant_id",
+            "svm",
+            "svm_id",
+            "svm_uuid",
+            "qtree",
+            "qtree_id",
+            "qtree_uuid",
+            "wwn",
+            "uuid",
+            "description",
+            "tags",
+            "custom_fields",
+            "created",
+            "last_updated",
         )
-        brief_fields = (
-            'id', 'url', 'display', 'name', 'lun',
-        )
-
-
-class StorageSessionSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:netbox_storage-api:storagesession-detail'
-    )
-    cluster = ClusterSerializer(nested=True)
-    datastores = SerializedPKRelatedField(
-        queryset=Datastore.objects.all(),
-        serializer=DatastoreSerializer,
-        many=True
-    )
-
-    class Meta:
-        model = StorageSession
-        fields = (
-            'id', 'url', 'display', 'name', 'cluster', 'datastores',
-            'description', 'tags', 'custom_fields', 'created', 'last_updated',
-        )
-        brief_fields = (
-            'id', 'url', 'display', 'name', 'cluster', 'datastores',
-        )
-
-
-class VMDKSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='plugins-api:netbox_storage-api:vmdk-detail'
-    )
-    datastore = DatastoreSerializer(nested=True)
-    vm = VirtualMachineSerializer(nested=True)
-
-    class Meta:
-        model = VMDK
-        fields = (
-            'id', 'url', 'display', 'vm', 'name', 'datastore',
-            'size', 'tags', 'custom_fields', 'created', 'last_updated',
-        )
-        brief_fields = (
-            'id', 'url', 'display', 'vm', 'name', 'datastore', 'size',
-        )
+        brief_fields = ("id", "url", "display", "name", "size", "tenant", "svm", "qtree", "uuid")
