@@ -134,7 +134,7 @@ class Quota(NetBoxModel):
         
     def __str__(self):
         name = f'{self.volume_name} - {self.qtree_name}' if self.qtree_name else f'{self.volume_name} - Volume level'
-        if self.size == 0
+        if self.size == 0:
             name = f"{name} (Metering quota)"
         return name
     

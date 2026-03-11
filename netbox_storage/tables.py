@@ -64,8 +64,8 @@ class LUNTable(NetBoxTable):
 
 class QuotaTable(NetBoxTable):
     display_name = tables.Column(
-        accessor='__str__'
-        verbose_name='Name'
+        accessor='__str__',
+        verbose_name='Name',
         linkify=True
     )
     tenant = tables.Column(
