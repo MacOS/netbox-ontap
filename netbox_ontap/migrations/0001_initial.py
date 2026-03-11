@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('size', models.PositiveBigIntegerField(blank=True, null=True)),
                 ('description', models.TextField(blank=True)),
                 ('index', models.CharField(blank=True, max_length=100, null=True)),
-                ('qtree', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='quotas', to='netbox_storage.qtree')),
+                ('qtree', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='quotas', to='netbox_ontap.qtree')),
                 ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
             ],
             options={
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100)),
                 ('description', models.TextField(blank=True)),
                 ('uuid', models.UUIDField(blank=True, null=True)),
-                ('svm', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='volumes', to='netbox_storage.svm')),
+                ('svm', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='volumes', to='netbox_ontap.svm')),
                 ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='volumes', to='tenancy.tenant')),
             ],
@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='qtree',
             name='volume',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='qtrees', to='netbox_storage.volume'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='qtrees', to='netbox_ontap.volume'),
         ),
         migrations.AlterUniqueTogether(
             name='qtree',
@@ -110,8 +110,8 @@ class Migration(migrations.Migration):
                 ('uuid', models.UUIDField(blank=True, null=True)),
                 ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
                 ('tenant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='luns', to='tenancy.tenant')),
-                ('qtree', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='luns', to='netbox_storage.qtree')),
-                ('volume', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='luns', to='netbox_storage.volume')),
+                ('qtree', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='luns', to='netbox_ontap.qtree')),
+                ('volume', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='luns', to='netbox_ontap.volume')),
             ],
             options={
                 'ordering': ('name',),

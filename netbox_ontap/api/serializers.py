@@ -10,7 +10,7 @@ from ..models import LUN, QTree, Quota, SVM, Volume
 
 
 class SVMSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:svm-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_ontap-api:svm-detail")
     cluster = ClusterSerializer(nested=True, read_only=True)
     tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
@@ -41,7 +41,7 @@ class SVMSerializer(NetBoxModelSerializer):
 
 
 class VolumeSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:volume-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_ontap-api:volume-detail")
     svm = SVMSerializer(nested=True, read_only=True)
     tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
@@ -80,7 +80,7 @@ class VolumeSerializer(NetBoxModelSerializer):
 
 
 class QTreeSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:qtree-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_ontap-api:qtree-detail")
     volume = VolumeSerializer(nested=True, read_only=True)
 
     volume_id = serializers.PrimaryKeyRelatedField(
@@ -115,7 +115,7 @@ class QTreeSerializer(NetBoxModelSerializer):
 
 
 class QuotaSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:quota-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_ontap-api:quota-detail")
     qtree = QTreeSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
     qtree_id = serializers.PrimaryKeyRelatedField(
@@ -151,7 +151,7 @@ class QuotaSerializer(NetBoxModelSerializer):
 
 
 class LUNSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:lun-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_ontap-api:lun-detail")
     tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
     volume = VolumeSerializer(nested=True, read_only=True)
     qtree = QTreeSerializer(nested=True, required=False, allow_null=True, read_only=True)

@@ -41,11 +41,11 @@ class SVM(NetBoxModel):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:svm', args=[self.pk])
+        return reverse('plugins:netbox_ontap:svm', args=[self.pk])
     
 class Volume(NetBoxModel):
     prerequisite_models = (
-        'netbox_storage.SVM',
+        'netbox_ontap.SVM',
     )
 
     name = models.CharField(
@@ -86,11 +86,11 @@ class Volume(NetBoxModel):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:volume', args=[self.pk])
+        return reverse('plugins:netbox_ontap:volume', args=[self.pk])
    
 class QTree(NetBoxModel):
     prerequisite_models = (
-        'netbox_storage.Volume',
+        'netbox_ontap.Volume',
     )
 
     name = models.CharField(
@@ -117,11 +117,11 @@ class QTree(NetBoxModel):
         return f'{self.volume.name}/{self.name}'
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:qtree', args=[self.pk])
+        return reverse('plugins:netbox_ontap:qtree', args=[self.pk])
 
 class Quota(NetBoxModel):
     prerequisite_models = (
-        'netbox_storage.QTree',
+        'netbox_ontap.QTree',
     )
     size = models.PositiveBigIntegerField(
         help_text='Size in bytes',
@@ -152,7 +152,7 @@ class Quota(NetBoxModel):
         return 'Volume level quota'
     
     def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:quota', args=[self.pk])
+        return reverse('plugins:netbox_ontap:quota', args=[self.pk])
     
     @property
     def display_name(self):
@@ -238,4 +238,4 @@ class LUN(NetBoxModel):
         return f'{self.name} - {self.tenant.name}' if self.tenant else f'{self.name}'
 
     def get_absolute_url(self):
-        return reverse('plugins:netbox_storage:lun', args=[self.pk])
+        return reverse('plugins:netbox_ontap:lun', args=[self.pk])

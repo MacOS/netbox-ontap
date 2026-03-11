@@ -15,7 +15,7 @@ class ClusterStorageCard(PluginTemplateExtension):
 		luns = LUN.objects.filter(volume__svm__cluster=cluster).order_by("name")[:25]
 
 		return self.render(
-			"netbox_storage/extends/cluster_storage.html",
+			"netbox_ontap/extends/cluster_storage.html",
 			extra_context={
 				"svms": svms,
 				"volumes": volumes,
@@ -61,7 +61,7 @@ class TenantStorageCard(PluginTemplateExtension):
 		total_quota_size = quotas.aggregate(total=Sum("size"))["total"] or 0
 
 		return self.render(
-			"netbox_storage/extends/tenant_storage.html",
+			"netbox_ontap/extends/tenant_storage.html",
 			extra_context={
 				"svms": svms,
 				"volumes": volumes,

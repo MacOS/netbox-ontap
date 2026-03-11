@@ -4,7 +4,7 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='netbox-storage-plugin',
+    name='netbox-ontap-plugin',
     version='1.0.0',
     description='NetBox ONTAP plugin',
     long_description=long_description,
@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     author='Gabor Somogyvari, Leonhard Kreißig',
-    url='https://gitlab.devops.telekom.de/leonhard.kreissig/netbox-storage',
+    url='https://gitlab.devops.telekom.de/leonhard.kreissig/netbox-ontap',
     keywords=['netbox', 'netbox-plugin'],
     classifiers=[
         'Programming Language :: Python :: 3',

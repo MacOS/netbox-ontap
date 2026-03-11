@@ -1,7 +1,7 @@
 from netbox.plugins import PluginConfig
 
-class NetBoxStorageConfig(PluginConfig):
-    name = 'netbox_storage'
+class NetBoxOntapConfig(PluginConfig):
+    name = 'netbox_ontap'
     verbose_name = ' NetBox ONTAP'
     description = 'Netbox ONTAP Storage Administration Plugin'
     version = '1.0.0'
@@ -10,4 +10,4 @@ class NetBoxStorageConfig(PluginConfig):
     author = 'Gabor Somogyvari'
 
 
-config = NetBoxStorageConfig
+config = NetBoxOntapConfig

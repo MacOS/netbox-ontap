@@ -19,19 +19,19 @@ The plugin is not available via pip and must be installed from source.
 1. Clone the plugin repository:
 ```bash
 cd /opt/netbox
-git clone https://gitlab.devops.telekom.de/leonhard.kreissig/netbox-storage.git
+git clone https://gitlab.devops.telekom.de/leonhard.kreissig/netbox-ontap.git
 ```
 
 2. Install the plugin:
 ```bash
 source /opt/netbox/venv/bin/activate
-cd netbox-storage
+cd netbox-ontap
 pip install -e .
 ```
 
-3. Add netbox_storage to PLUGINS in configuration.py:
+3. Add netbox_ontap to PLUGINS in configuration.py:
 ```python
-PLUGINS = ['netbox_storage']
+PLUGINS = ['netbox_ontap']
 ```
 
 4. Run database migrations:
