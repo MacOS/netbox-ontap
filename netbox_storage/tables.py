@@ -64,7 +64,7 @@ class LUNTable(NetBoxTable):
 
 class QuotaTable(NetBoxTable):
     display_name = tables.Column(
-        accessor='__str__',
+        empty_values=(),
         verbose_name='Name',
         linkify=True
     )
@@ -82,6 +82,9 @@ class QuotaTable(NetBoxTable):
         
     def render_size(self, value):
         return filesizeformat(value)
+
+    def render_display_name(self, record):
+        return str(record)
 
 
 class DatastoreTable(NetBoxTable):
