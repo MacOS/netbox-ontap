@@ -141,6 +141,9 @@ class Quota(NetBoxModel):
     def get_absolute_url(self):
         return reverse('plugins:netbox_storage:quota', args=[self.pk])
     
+    @property
+    def display_name(self):
+        return str(self)
 
 class Datastore(NetBoxModel):
     lun = models.ManyToManyField(

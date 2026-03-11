@@ -64,7 +64,6 @@ class LUNTable(NetBoxTable):
 
 class QuotaTable(NetBoxTable):
     display_name = tables.Column(
-        empty_values=(),
         verbose_name='Name',
         linkify=True
     )
