@@ -255,7 +255,12 @@ class LUNSerializer(NetBoxModelSerializer):
     volume = VolumeSerializer(nested=True, read_only=True)
     qtree = QTreeSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
-    volume_id = serializers.PrimaryKeyRelatedField(source="volume", queryset=Volume.objects.all(), write_only=True)
+    volume_id = serializers.PrimaryKeyRelatedField(
+        source="volume",
+        queryset=Volume.objects.all(),
+        write_only=True,
+        required=False,
+    )
     volume_uuid = serializers.SlugRelatedField(
         source="volume",
         queryset=Volume.objects.exclude(uuid__isnull=True),
