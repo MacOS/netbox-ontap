@@ -27,7 +27,7 @@ class LUNFilterSet(NetBoxModelFilterSet):
 class QuotaFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = Quota
-        fields = ('id', 'volume_name', 'tenant', 'qtree_name', 'svm_name', 'uuid',)
+        fields = ('id', 'volume_name', 'tenant', 'qtree_name', 'svm_name', 'volume_uuid', 'index')
 
     def search(self, queryset, name, value):
         return queryset.filter(volume_name__icontains=value)

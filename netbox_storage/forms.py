@@ -45,7 +45,7 @@ class QuotaForm(NetBoxModelForm):
 
     class Meta:
         model = Quota
-        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'uuid', 'description')
+        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'volume_uuid', 'index', 'description')
 
 
 
@@ -153,9 +153,13 @@ class QuotaFilterForm(NetBoxModelFilterSetForm):
         required=False,
         label='SVM Name'
     )
-    uuid = forms.CharField(
+    volume_uuid = forms.CharField(
         required=False,
         label="External UUID"
+    )
+    index = forms.CharField(
+        required=False,
+        label="Quota Index"
     )
 
 
@@ -240,7 +244,7 @@ class QuotaCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = Quota
-        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'uuid', 'description')
+        fields = ('volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'volume_uuid', 'index', 'description')
 
 
 class DatastoreCSVForm(NetBoxModelImportForm):

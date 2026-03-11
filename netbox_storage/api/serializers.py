@@ -53,11 +53,11 @@ class QuotaSerializer(NetBoxModelSerializer):
     class Meta:
         model = Quota
         fields = (
-            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'uuid', 'description',
+            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'volume_uuid', 'index', 'description',
             'tags', 'custom_fields', 'created', 'last_updated',
         )
         brief_fields = (
-            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'uuid'
+            'id', 'url', 'display', 'volume_name', 'size', 'tenant', 'volume_uuid', 'index'
         )
 
 

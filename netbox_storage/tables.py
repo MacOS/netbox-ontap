@@ -73,7 +73,7 @@ class QuotaTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = Quota
         fields = (
-            'pk', 'id', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'uuid', 'description',
+            'pk', 'id', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'volume_uuid', 'index', 'description',
             'actions'
         )
         default_columns = ('volume_name', 'tenant', 'size')

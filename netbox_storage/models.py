@@ -113,10 +113,15 @@ class Quota(NetBoxModel):
         blank=True,
         null=True
     )
-    uuid = models.UUIDField(
+    volume_uuid = models.UUIDField(
         blank=True,
         null=True,
-        verbose_name="External UUID"
+        verbose_name="Volume UUID"
+    )
+    index = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name="Quota Index"
     )
     
     class Meta:
