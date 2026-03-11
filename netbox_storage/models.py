@@ -95,13 +95,17 @@ class Quota(NetBoxModel):
         max_length=100
     )
     size = models.PositiveBigIntegerField(
-        help_text='Size in bytes'
+        help_text='Size in bytes',
+        blank=True,
+        null=True
     )
     description = models.TextField(
         blank=True
     )
     qtree_name = models.CharField(
-        max_length=100
+        max_length=100,
+        blank=True,
+        null=True,
     )
     svm_name = models.CharField(
         max_length=100
