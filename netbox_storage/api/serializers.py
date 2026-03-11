@@ -10,7 +10,7 @@ from ..models import LUN, QTree, Quota, SVM, Volume
 
 
 class SVMSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:svm-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:svm-detail")
     cluster = ClusterSerializer(nested=True, read_only=True)
     tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
@@ -41,7 +41,7 @@ class SVMSerializer(NetBoxModelSerializer):
 
 
 class VolumeSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:volume-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:volume-detail")
     svm = SVMSerializer(nested=True, read_only=True)
     tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
@@ -80,7 +80,7 @@ class VolumeSerializer(NetBoxModelSerializer):
 
 
 class QTreeSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:qtree-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:qtree-detail")
     volume = VolumeSerializer(nested=True, read_only=True)
 
     volume_id = serializers.PrimaryKeyRelatedField(
@@ -115,7 +115,7 @@ class QTreeSerializer(NetBoxModelSerializer):
 
 
 class QuotaSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:quota-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:quota-detail")
     qtree = QTreeSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
     qtree_id = serializers.PrimaryKeyRelatedField(
@@ -151,22 +151,18 @@ class QuotaSerializer(NetBoxModelSerializer):
 
 
 class LUNSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:ontap-api:lun-detail")
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_storage-api:lun-detail")
     tenant = TenantSerializer(nested=True, required=False, allow_null=True, read_only=True)
-    svm = SVMSerializer(nested=True, required=False, allow_null=True, read_only=True)
+    volume = VolumeSerializer(nested=True, read_only=True)
     qtree = QTreeSerializer(nested=True, required=False, allow_null=True, read_only=True)
 
-    tenant_id = serializers.PrimaryKeyRelatedField(
-        source="tenant", queryset=Tenant.objects.all(), write_only=True, required=False, allow_null=True
-    )
-    svm_id = serializers.PrimaryKeyRelatedField(source="svm", queryset=SVM.objects.all(), write_only=True, required=False, allow_null=True)
-    svm_uuid = serializers.SlugRelatedField(
-        source="svm",
-        queryset=SVM.objects.exclude(uuid__isnull=True),
+    volume_id = serializers.PrimaryKeyRelatedField(source="volume", queryset=Volume.objects.all(), write_only=True)
+    volume_uuid = serializers.SlugRelatedField(
+        source="volume",
+        queryset=Volume.objects.exclude(uuid__isnull=True),
         slug_field="uuid",
         write_only=True,
         required=False,
-        allow_null=True,
     )
     qtree_id = serializers.PrimaryKeyRelatedField(
         source="qtree", queryset=QTree.objects.all(), write_only=True, required=False, allow_null=True
@@ -189,10 +185,9 @@ class LUNSerializer(NetBoxModelSerializer):
             "name",
             "size",
             "tenant",
-            "tenant_id",
-            "svm",
-            "svm_id",
-            "svm_uuid",
+            "volume",
+            "volume_id",
+            "volume_uuid",
             "qtree",
             "qtree_id",
             "qtree_uuid",
@@ -204,4 +199,4 @@ class LUNSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
         )
-        brief_fields = ("id", "url", "display", "name", "size", "tenant", "svm", "qtree", "uuid")
+        brief_fields = ("id", "url", "display", "name", "size", "tenant", "volume", "qtree", "uuid")

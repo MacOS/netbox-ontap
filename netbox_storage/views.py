@@ -1,4 +1,5 @@
 from netbox.views import generic
+from django.db.models import Q
 
 from . import filtersets, forms, models, tables
 
@@ -10,7 +11,7 @@ class SVMView(generic.ObjectView):
         volumes_table = tables.VolumeTable(instance.volumes.all())
         volumes_table.configure(request)
 
-        luns_table = tables.LUNTable(instance.luns.all())
+        luns_table = tables.LUNTable(models.LUN.objects.filter(volume__svm=instance).distinct())
         luns_table.configure(request)
 
         return {
@@ -54,7 +55,7 @@ class VolumeView(generic.ObjectView):
         qtrees_table = tables.QTreeTable(instance.qtrees.all())
         qtrees_table.configure(request)
 
-        luns_table = tables.LUNTable(models.LUN.objects.filter(qtree__volume=instance).distinct())
+        luns_table = tables.LUNTable(models.LUN.objects.filter(Q(volume=instance) | Q(qtree__volume=instance)).distinct())
         luns_table.configure(request)
 
         return {

@@ -56,7 +56,7 @@ class QuotaTable(NetBoxTable):
 class LUNTable(NetBoxTable):
     name = tables.Column(linkify=True)
     tenant = tables.Column(linkify=True)
-    svm = tables.Column(linkify=True)
+    volume = tables.Column(linkify=True)
     qtree = tables.Column(linkify=True)
 
     class Meta(NetBoxTable.Meta):
@@ -66,7 +66,7 @@ class LUNTable(NetBoxTable):
             "id",
             "name",
             "tenant",
-            "svm",
+            "volume",
             "qtree",
             "size",
             "wwn",
@@ -74,7 +74,7 @@ class LUNTable(NetBoxTable):
             "description",
             "actions",
         )
-        default_columns = ("name", "tenant", "svm", "qtree", "size")
+        default_columns = ("name", "tenant", "volume", "qtree", "size")
 
     def render_size(self, value):
         return filesizeformat(value)

@@ -174,12 +174,10 @@ class LUN(NetBoxModel):
         blank=True,
         verbose_name='WWN'
     )
-    svm = models.ForeignKey(
-        to=SVM,
+    volume = models.ForeignKey(
+        to=Volume,
         on_delete=models.PROTECT,
-        related_name='luns',
-        blank=True,
-        null=True
+        related_name='luns'
     )
     qtree = models.ForeignKey(
         to=QTree,
@@ -206,21 +204,35 @@ class LUN(NetBoxModel):
         ordering = ('name',)
         unique_together = ('tenant', 'name')
 
+    def _get_effective_tenant_id(self):
+        if self.volume.tenant_id:
+            return self.volume.tenant_id
+        if self.volume.svm and self.volume.svm.tenant_id:
+            return self.volume.svm.tenant_id
+        return None
+
     def clean(self):
         super().clean()
         errors = {}
 
-        if self.tenant and self.svm and self.svm.tenant and self.tenant_id != self.svm.tenant_id:
-            errors['tenant'] = 'Tenant of LUN cannot differ from Tenant of SVM.'
+        effective_tenant_id = self._get_effective_tenant_id()
+
+        if self.tenant_id and effective_tenant_id and self.tenant_id != effective_tenant_id:
+            errors['tenant'] = 'Tenant of LUN cannot differ from Tenant of Volume.'
 
         if self.tenant and self.qtree and self.qtree.volume.tenant and self.tenant_id != self.qtree.volume.tenant_id:
             errors['tenant'] = 'Tenant of LUN cannot differ from Tenant of QTree/Volume.'
 
-        if self.svm and self.qtree and self.qtree.volume.svm_id != self.svm_id:
-            errors['qtree'] = 'QTree must belong to the same SVM as the LUN.'
+        if self.qtree and self.volume and self.qtree.volume_id != self.volume_id:
+            errors['qtree'] = 'QTree must belong to the selected Volume.'
 
         if errors:
             raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        # Tenant is derived from the authoritative volume assignment.
+        self.tenant_id = self._get_effective_tenant_id()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.name} - {self.tenant.name}' if self.tenant else f'{self.name}'

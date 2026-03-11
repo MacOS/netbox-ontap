@@ -51,13 +51,12 @@ class QuotaForm(NetBoxModelForm):
 
 
 class LUNForm(NetBoxModelForm):
-    tenant = DynamicModelChoiceField(queryset=Tenant.objects.all(), required=False)
-    svm = DynamicModelChoiceField(queryset=SVM.objects.all(), required=False)
+    volume = DynamicModelChoiceField(queryset=Volume.objects.all())
     qtree = DynamicModelChoiceField(queryset=QTree.objects.all(), required=False)
 
     class Meta:
         model = LUN
-        fields = ("name", "tenant", "svm", "qtree", "size", "wwn", "uuid", "description", "tags")
+        fields = ("name", "volume", "qtree", "size", "wwn", "uuid", "description", "tags")
 
 
 #
@@ -96,7 +95,7 @@ class QuotaFilterForm(NetBoxModelFilterSetForm):
 class LUNFilterForm(NetBoxModelFilterSetForm):
     model = LUN
     tenant = DynamicModelMultipleChoiceField(queryset=Tenant.objects.all(), required=False)
-    svm = DynamicModelMultipleChoiceField(queryset=SVM.objects.all(), required=False)
+    volume = DynamicModelMultipleChoiceField(queryset=Volume.objects.all(), required=False)
     qtree = DynamicModelMultipleChoiceField(queryset=QTree.objects.all(), required=False)
     name = forms.CharField(required=False)
     wwn = forms.CharField(required=False, label="WWN")
@@ -142,10 +141,9 @@ class QuotaCSVForm(NetBoxModelImportForm):
 
 
 class LUNCSVForm(NetBoxModelImportForm):
-    tenant = CSVModelChoiceField(queryset=Tenant.objects.all(), to_field_name="name", required=False)
-    svm = CSVModelChoiceField(queryset=SVM.objects.all(), to_field_name="name", required=False)
+    volume = CSVModelChoiceField(queryset=Volume.objects.all(), to_field_name="name")
     qtree = CSVModelChoiceField(queryset=QTree.objects.all(), to_field_name="name", required=False)
 
     class Meta:
         model = LUN
-        fields = ("name", "tenant", "svm", "qtree", "size", "wwn", "uuid", "description")
+        fields = ("name", "volume", "qtree", "size", "wwn", "uuid", "description")

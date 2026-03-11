@@ -2,34 +2,182 @@
     <h5 class="card-header">Storage Objects</h5>
     <div class="card-body">
         <div class="mb-3">
-            <strong>SVMs</strong>
-            <ul class="mb-0 mt-1">
-                {% for svm in svms %}
-                <li><a href="{{ svm.get_absolute_url }}">{{ svm.name }}</a></li>
-                {% empty %}
-                <li class="text-muted">No SVMs assigned to this tenant.</li>
-                {% endfor %}
-            </ul>
+            <strong>SVMs ({{ svms|length }})</strong>
+            <div
+                class="table-responsive mt-2"
+                style="max-height: 220px; overflow-y: auto"
+            >
+                <table class="table table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for svm in svms %}
+                        <tr>
+                            <td>
+                                <a href="{{ svm.get_absolute_url }}"
+                                    >{{ svm.name }}</a
+                                >
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td class="text-muted">
+                                No SVMs assigned to this tenant.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+
         <div class="mb-3">
-            <strong>Volumes</strong>
-            <ul class="mb-0 mt-1">
-                {% for volume in volumes %}
-                <li><a href="{{ volume.get_absolute_url }}">{{ volume.name }}</a></li>
-                {% empty %}
-                <li class="text-muted">No volumes assigned to this tenant.</li>
-                {% endfor %}
-            </ul>
+            <strong>Volumes ({{ volumes|length }})</strong>
+            <div
+                class="table-responsive mt-2"
+                style="max-height: 220px; overflow-y: auto"
+            >
+                <table class="table table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Volume</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for volume in volumes %}
+                        <tr>
+                            <td>
+                                <a href="{{ volume.get_absolute_url }}"
+                                    >{{ volume.name }}</a
+                                >
+                            </td>
+                            <td>
+                                {% if volume.svm %}
+                                <a href="{{ volume.svm.get_absolute_url }}"
+                                    >{{ volume.svm.name }}</a
+                                >
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-muted">
+                                No volumes assigned to this tenant.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+
+        <div class="mb-3">
+            <strong>LUNs ({{ luns|length }})</strong>
+            <div
+                class="table-responsive mt-2"
+                style="max-height: 220px; overflow-y: auto"
+            >
+                <table class="table table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Volume</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lun in luns %}
+                        <tr>
+                            <td>
+                                <a href="{{ lun.get_absolute_url }}"
+                                    >{{ lun.name }}</a
+                                >
+                            </td>
+                            <td>
+                                {% if lun.volume %}
+                                <a href="{{ lun.volume.get_absolute_url }}"
+                                    >{{ lun.volume.name }}</a
+                                >
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-muted">
+                                No LUNs assigned to this tenant.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div>
-            <strong>LUNs</strong>
-            <ul class="mb-0 mt-1">
-                {% for lun in luns %}
-                <li><a href="{{ lun.get_absolute_url }}">{{ lun.name }}</a></li>
-                {% empty %}
-                <li class="text-muted">No LUNs assigned to this tenant.</li>
-                {% endfor %}
-            </ul>
+            <strong>Quotas ({{ quotas|length }})</strong>
+            <div class="text-muted small mt-1">
+                Total quota size: {{ total_quota_size|filesizeformat }}
+            </div>
+            <div
+                class="table-responsive mt-2"
+                style="max-height: 260px; overflow-y: auto"
+            >
+                <table class="table table-hover table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Volume</th>
+                            <th>QTree</th>
+                            <th>Index</th>
+                            <th class="text-end">Size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quota in quotas %}
+                        <tr>
+                            <td>
+                                {% if quota.qtree and quota.qtree.volume %}
+                                <a
+                                    href="{{ quota.qtree.volume.get_absolute_url }}"
+                                    >{{ quota.qtree.volume.name }}</a
+                                >
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if quota.qtree %}
+                                <a href="{{ quota.qtree.get_absolute_url }}"
+                                    >{{ quota.qtree.name }}</a
+                                >
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if quota.index %} {{ quota.index }} {% else
+                                %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">{{ quota.size_display }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-muted">
+                                No quotas assigned to this tenant.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

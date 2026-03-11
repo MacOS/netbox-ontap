@@ -29,6 +29,6 @@ class QuotaViewSet(NetBoxModelViewSet):
 
 
 class LUNViewSet(NetBoxModelViewSet):
-    queryset = models.LUN.objects.select_related("tenant", "svm", "qtree", "qtree__volume").prefetch_related("tags")
+    queryset = models.LUN.objects.select_related("tenant", "volume", "volume__svm", "qtree", "qtree__volume").prefetch_related("tags")
     serializer_class = LUNSerializer
     filterset_class = filtersets.LUNFilterSet
