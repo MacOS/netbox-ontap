@@ -133,7 +133,10 @@ class Quota(NetBoxModel):
         ordering = ('tenant', 'volume_name')
         
     def __str__(self):
-        return f'{self.volume_name} - {self.tenant.name}' if self.tenant else f'{self.volume_name}'
+        name = f'{self.volume_name} - {self.qtree_name}' if self.qtree_name else f'{self.volume_name} - Volume level'
+        if self.size == 0
+            name = f"{name} (Metering quota)"
+        return name
     
     def get_absolute_url(self):
         return reverse('plugins:netbox_storage:quota', args=[self.pk])
