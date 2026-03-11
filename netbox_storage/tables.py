@@ -73,10 +73,10 @@ class QuotaTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = Quota
         fields = (
-            'pk', 'id', 'volume_name', 'size', 'tenant', 'qtree_name', 'svm_name', 'volume_uuid', 'index', 'description',
+            'pk', 'id', 'volume_name', 'qtree_name', 'size', 'tenant', 'svm_name', 'volume_uuid', 'index', 'description',
             'actions'
         )
-        default_columns = ('volume_name', 'tenant', 'size')
+        default_columns = ('volume_name', 'qtree_name', 'tenant', 'size')
         
     def render_size(self, value):
         return filesizeformat(value)
