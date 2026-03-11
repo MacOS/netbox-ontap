@@ -8,7 +8,7 @@ class SVMView(generic.ObjectView):
     queryset = models.SVM.objects.all()
 
     def get_extra_context(self, request, instance):
-        volumes_table = tables.VolumeTable(instance.volumes.all())
+        volumes_table = tables.VolumeTable(instance.ontap_volumes.all())
         volumes_table.configure(request)
 
         luns_table = tables.LUNTable(models.LUN.objects.filter(volume__svm=instance).distinct())
@@ -52,7 +52,7 @@ class VolumeView(generic.ObjectView):
     queryset = models.Volume.objects.all()
 
     def get_extra_context(self, request, instance):
-        qtrees_table = tables.QTreeTable(instance.qtrees.all())
+        qtrees_table = tables.QTreeTable(instance.ontap_qtrees.all())
         qtrees_table.configure(request)
 
         luns_table = tables.LUNTable(models.LUN.objects.filter(Q(volume=instance) | Q(qtree__volume=instance)).distinct())
@@ -96,10 +96,10 @@ class QTreeView(generic.ObjectView):
     queryset = models.QTree.objects.all()
 
     def get_extra_context(self, request, instance):
-        quotas_table = tables.QuotaTable(instance.quotas.all())
+        quotas_table = tables.QuotaTable(instance.ontap_quotas.all())
         quotas_table.configure(request)
 
-        luns_table = tables.LUNTable(instance.luns.all())
+        luns_table = tables.LUNTable(instance.ontap_luns.all())
         luns_table.configure(request)
 
         return {

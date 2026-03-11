@@ -21,7 +21,7 @@ class SVM(NetBoxModel):
     cluster = models.ForeignKey(
         to=Cluster,
         on_delete=models.PROTECT,
-        related_name='svms',
+        related_name='ontap_svms',
         blank=True,
         null=True
     )
@@ -29,7 +29,7 @@ class SVM(NetBoxModel):
     tenant = models.ForeignKey(
         to=Tenant,
         on_delete=models.PROTECT,
-        related_name='svms',
+        related_name='ontap_svms',
         blank=True,
         null=True
     )
@@ -57,7 +57,7 @@ class Volume(NetBoxModel):
     tenant = models.ForeignKey(
         to=Tenant,
         on_delete=models.PROTECT,
-        related_name='volumes',
+        related_name='ontap_volumes',
         blank=True,
         null=True
     )
@@ -69,7 +69,7 @@ class Volume(NetBoxModel):
     svm = models.ForeignKey(
         to=SVM,
         on_delete=models.PROTECT,
-        related_name='volumes'
+        related_name='ontap_volumes'
     )
     class Meta:
         ordering = ('name',)
@@ -99,7 +99,7 @@ class QTree(NetBoxModel):
     volume = models.ForeignKey(
         to='Volume',
         on_delete=models.PROTECT,
-        related_name='qtrees'
+        related_name='ontap_qtrees'
     )
     description = models.TextField(
         blank=True
@@ -134,7 +134,7 @@ class Quota(NetBoxModel):
     qtree = models.ForeignKey(
         to=QTree,
         on_delete=models.PROTECT,
-        related_name='quotas',
+        related_name='ontap_quotas',
     )
     index = models.CharField(
         max_length=100,
@@ -177,12 +177,12 @@ class LUN(NetBoxModel):
     volume = models.ForeignKey(
         to=Volume,
         on_delete=models.PROTECT,
-        related_name='luns'
+        related_name='ontap_luns'
     )
     qtree = models.ForeignKey(
         to=QTree,
         on_delete=models.PROTECT,
-        related_name='luns',
+        related_name='ontap_luns',
         blank=True,
         null=True
     )
@@ -190,7 +190,7 @@ class LUN(NetBoxModel):
     tenant = models.ForeignKey(
         to=Tenant,
         on_delete=models.PROTECT,
-        related_name='luns',
+        related_name='ontap_luns',
         blank=True,
         null=True
     )
