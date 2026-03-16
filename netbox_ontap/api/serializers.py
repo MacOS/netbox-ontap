@@ -181,14 +181,13 @@ class QTreeSerializer(NetBoxModelSerializer):
             "volume",
             "volume_id",
             "volume_uuid",
-            "uuid",
             "description",
             "tags",
             "custom_fields",
             "created",
             "last_updated",
         )
-        brief_fields = ("id", "url", "display", "name", "volume", "uuid")
+        brief_fields = ("id", "url", "display", "name", "volume")
 
 
 class QuotaSerializer(NetBoxModelSerializer):
@@ -198,32 +197,14 @@ class QuotaSerializer(NetBoxModelSerializer):
     qtree_id = serializers.PrimaryKeyRelatedField(
         source="qtree", queryset=QTree.objects.all(), write_only=True, required=False, allow_null=True
     )
-    qtree_uuid = serializers.SlugRelatedField(
-        source="qtree",
-        queryset=QTree.objects.exclude(uuid__isnull=True),
-        slug_field="uuid",
-        write_only=True,
-        required=False,
-        allow_null=True,
-    )
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        initial_data = getattr(self, "initial_data", {})
-
-        _validate_id_uuid_match(
-            initial_data,
-            id_key="qtree_id",
-            uuid_key="qtree_uuid",
-            queryset=QTree.objects.all(),
-            object_label="QTree",
-        )
 
         if self.instance is None and attrs.get("qtree") is None:
             raise serializers.ValidationError(
                 {
-                    "qtree_id": "One of qtree_id or qtree_uuid is required.",
-                    "qtree_uuid": "One of qtree_id or qtree_uuid is required.",
+                    "qtree_id": "qtree_id is required.",
                 }
             )
 
@@ -237,7 +218,6 @@ class QuotaSerializer(NetBoxModelSerializer):
             "display",
             "qtree",
             "qtree_id",
-            "qtree_uuid",
             "size",
             "index",
             "description",
@@ -271,14 +251,6 @@ class LUNSerializer(NetBoxModelSerializer):
     qtree_id = serializers.PrimaryKeyRelatedField(
         source="qtree", queryset=QTree.objects.all(), write_only=True, required=False, allow_null=True
     )
-    qtree_uuid = serializers.SlugRelatedField(
-        source="qtree",
-        queryset=QTree.objects.exclude(uuid__isnull=True),
-        slug_field="uuid",
-        write_only=True,
-        required=False,
-        allow_null=True,
-    )
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
@@ -290,13 +262,6 @@ class LUNSerializer(NetBoxModelSerializer):
             uuid_key="volume_uuid",
             queryset=Volume.objects.all(),
             object_label="Volume",
-        )
-        _validate_id_uuid_match(
-            initial_data,
-            id_key="qtree_id",
-            uuid_key="qtree_uuid",
-            queryset=QTree.objects.all(),
-            object_label="QTree",
         )
 
         if self.instance is None and attrs.get("volume") is None:
@@ -323,7 +288,6 @@ class LUNSerializer(NetBoxModelSerializer):
             "volume_uuid",
             "qtree",
             "qtree_id",
-            "qtree_uuid",
             "wwn",
             "uuid",
             "description",

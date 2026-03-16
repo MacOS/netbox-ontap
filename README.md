@@ -16,7 +16,7 @@ The plugin introduces 5 new object types that map directly to ONTAP concepts:
 | **Quota**  | Quota rule              | belongs to a QTree; identified by QTree + Index                          |
 | **LUN**    | LUN                     | belongs to a Volume and optionally a QTree; carries size (bytes) and WWN |
 
-All objects support a UUID field for correlation with live ONTAP data.
+All objects except QTree support a UUID field for correlation with live ONTAP data. QTrees have no UUID in ONTAP and are identified by their natural key (Volume + Name).
 
 ### Tenant propagation
 
@@ -120,8 +120,9 @@ The `examples/ansible/` directory contains reusable tasks for idempotent imports
 
 | File                                          | Purpose                                                                                                                                  |
 |-----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| `tasks/netbox_plugin_upsert_by_uuid.yml`      | Generic upsert for objects with a UUID field (`svm`, `volume`, `qtree`, `lun`). Looks up by UUID, creates if absent, patches if present. |
-| `tasks/netbox_plugin_upsert_quota_by_key.yml` | Quota upsert using the natural key `qtree_uuid` + `index` (Quota has no dedicated UUID field).                                           |
+| `tasks/netbox_plugin_upsert_by_uuid.yml`        | Generic upsert for objects with a UUID field (`svm`, `volume`, `lun`). Looks up by UUID, creates if absent, patches if present.      |
+| `tasks/netbox_plugin_upsert_qtree_by_key.yml`   | QTree upsert using the natural key `volume_id` + `name` (QTrees have no UUID in ONTAP). Returns `_upserted_qtree_id`.                |
+| `tasks/netbox_plugin_upsert_quota_by_key.yml`   | Quota upsert using the natural key `qtree_id` + `index` (Quota has no dedicated UUID field).                                         |
 
 ### Example playbook
 

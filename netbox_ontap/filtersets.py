@@ -33,12 +33,11 @@ class VolumeFilterSet(NetBoxModelFilterSet):
 class QTreeFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = QTree
-        fields = ("id", "name", "volume", "uuid")
+        fields = ("id", "name", "volume")
 
     def search(self, queryset, name, value):
         return queryset.filter(
             Q(name__icontains=value)
-            | Q(uuid__icontains=value)
             | Q(volume__name__icontains=value)
             | Q(volume__uuid__icontains=value)
         )
@@ -53,7 +52,6 @@ class QuotaFilterSet(NetBoxModelFilterSet):
         return queryset.filter(
             Q(index__icontains=value)
             | Q(qtree__name__icontains=value)
-            | Q(qtree__uuid__icontains=value)
             | Q(qtree__volume__name__icontains=value)
             | Q(qtree__volume__uuid__icontains=value)
         )
@@ -74,5 +72,4 @@ class LUNFilterSet(NetBoxModelFilterSet):
             | Q(volume__svm__name__icontains=value)
             | Q(volume__svm__uuid__icontains=value)
             | Q(qtree__name__icontains=value)
-            | Q(qtree__uuid__icontains=value)
         )

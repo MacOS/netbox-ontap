@@ -39,7 +39,7 @@ class QTreeForm(NetBoxModelForm):
 
     class Meta:
         model = QTree
-        fields = ("name", "volume", "uuid", "description", "tags")
+        fields = ("name", "volume", "description", "tags")
 
 
 class QuotaForm(NetBoxModelForm):
@@ -83,7 +83,6 @@ class QTreeFilterForm(NetBoxModelFilterSetForm):
     model = QTree
     volume = DynamicModelMultipleChoiceField(queryset=Volume.objects.all(), required=False)
     name = forms.CharField(required=False)
-    uuid = forms.CharField(required=False, label="ONTAP QTree UUID")
 
 
 class QuotaFilterForm(NetBoxModelFilterSetForm):
@@ -129,7 +128,7 @@ class QTreeCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = QTree
-        fields = ("name", "volume", "uuid", "description")
+        fields = ("name", "volume", "description")
 
 
 class QuotaCSVForm(NetBoxModelImportForm):
@@ -137,7 +136,7 @@ class QuotaCSVForm(NetBoxModelImportForm):
 
     class Meta:
         model = Quota
-        fields = ("qtree", "size", "index", "description")
+        fields = ("qtree", "size", "description")
 
 
 class LUNCSVForm(NetBoxModelImportForm):

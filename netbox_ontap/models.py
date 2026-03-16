@@ -104,11 +104,6 @@ class QTree(NetBoxModel):
     description = models.TextField(
         blank=True
     )
-    uuid = models.UUIDField(
-        verbose_name="ONTAP QTree UUID",
-        blank=True,
-        null=True,
-    )
     class Meta:
         ordering = ('name', 'volume__name')
         unique_together = ('volume', 'name')
