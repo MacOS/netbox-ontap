@@ -43,11 +43,12 @@ class QTreeForm(NetBoxModelForm):
 
 
 class QuotaForm(NetBoxModelForm):
+    volume = DynamicModelChoiceField(queryset=Volume.objects.all())
     qtree = DynamicModelChoiceField(queryset=QTree.objects.all(), required=False)
 
     class Meta:
         model = Quota
-        fields = ("qtree", "size", "index", "description", "tags")
+        fields = ("volume", "qtree", "size", "index", "description", "tags")
 
 
 class LUNForm(NetBoxModelForm):
@@ -87,6 +88,7 @@ class QTreeFilterForm(NetBoxModelFilterSetForm):
 
 class QuotaFilterForm(NetBoxModelFilterSetForm):
     model = Quota
+    volume = DynamicModelMultipleChoiceField(queryset=Volume.objects.all(), required=False)
     qtree = DynamicModelMultipleChoiceField(queryset=QTree.objects.all(), required=False)
     index = forms.CharField(required=False, label="Quota Index")
 
@@ -132,11 +134,12 @@ class QTreeCSVForm(NetBoxModelImportForm):
 
 
 class QuotaCSVForm(NetBoxModelImportForm):
+    volume = CSVModelChoiceField(queryset=Volume.objects.all(), to_field_name="name")
     qtree = CSVModelChoiceField(queryset=QTree.objects.all(), to_field_name="name", required=False)
 
     class Meta:
         model = Quota
-        fields = ("qtree", "size", "description")
+        fields = ("volume", "qtree", "size", "index", "description")
 
 
 class LUNCSVForm(NetBoxModelImportForm):

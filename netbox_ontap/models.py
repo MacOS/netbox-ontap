@@ -115,6 +115,10 @@ class QTree(NetBoxModel):
         return reverse('plugins:netbox_ontap:qtree', args=[self.pk])
 
 class Quota(NetBoxModel):
+    prerequisite_models = (
+        'netbox_ontap.Volume',
+    )
+
     size = models.PositiveBigIntegerField(
         help_text='Size in bytes',
         blank=True,
@@ -122,6 +126,11 @@ class Quota(NetBoxModel):
     )
     description = models.TextField(
         blank=True
+    )
+    volume = models.ForeignKey(
+        to=Volume,
+        on_delete=models.PROTECT,
+        related_name='ontap_quotas',
     )
     qtree = models.ForeignKey(
         to=QTree,
@@ -138,12 +147,20 @@ class Quota(NetBoxModel):
     )
     
     class Meta:
-        ordering = ('qtree__volume__name', 'index')
+        ordering = ('volume__name', 'index')
+
+    def clean(self):
+        super().clean()
+
+        if self.qtree and self.volume and self.qtree.volume.id != self.volume.id:
+            raise ValidationError({
+                'qtree': 'QTree must belong to the selected Volume.'
+            })
         
     def __str__(self):
         if self.qtree:
-            return f'{self.qtree.volume.name} - {self.qtree.name}'
-        return 'Volume level quota'
+            return f'{self.volume.name} - {self.qtree.name}'
+        return f'{self.volume.name} - Volume level quota'
     
     def get_absolute_url(self):
         return reverse('plugins:netbox_ontap:quota', args=[self.pk])

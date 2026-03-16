@@ -40,12 +40,13 @@ class QTreeTable(NetBoxTable):
 
 class QuotaTable(NetBoxTable):
     display_name = tables.Column(verbose_name="Name", linkify=True)
+    volume = tables.Column(linkify=True)
     qtree = tables.Column(linkify=True)
 
     class Meta(NetBoxTable.Meta):
         model = Quota
-        fields = ("pk", "id", "display_name", "qtree", "size", "index", "description", "actions")
-        default_columns = ("display_name", "qtree", "index", "size")
+        fields = ("pk", "id", "display_name", "volume", "qtree", "size", "index", "description", "actions")
+        default_columns = ("display_name", "volume", "qtree", "index", "size")
 
     def render_size(self, value):
         if value in (None, 0):

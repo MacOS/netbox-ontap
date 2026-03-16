@@ -46,14 +46,14 @@ class QTreeFilterSet(NetBoxModelFilterSet):
 class QuotaFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = Quota
-        fields = ("id", "qtree", "index")
+        fields = ("id", "volume", "qtree", "index")
 
     def search(self, queryset, name, value):
         return queryset.filter(
             Q(index__icontains=value)
+            | Q(volume__name__icontains=value)
+            | Q(volume__uuid__icontains=value)
             | Q(qtree__name__icontains=value)
-            | Q(qtree__volume__name__icontains=value)
-            | Q(qtree__volume__uuid__icontains=value)
         )
 
 

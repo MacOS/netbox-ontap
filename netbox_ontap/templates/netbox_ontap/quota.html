@@ -17,9 +17,9 @@
                 <tr>
                     <th scope="row">Volume</th>
                     <td>
-                        {% if object.qtree %}
-                        <a href="{{ object.qtree.volume.get_absolute_url }}"
-                            >{{ object.qtree.volume }}</a
+                        {% if object.volume %}
+                        <a href="{{ object.volume.get_absolute_url }}"
+                            >{{ object.volume }}</a
                         >
                         {% else %} &mdash; {% endif %}
                     </td>
@@ -34,9 +34,9 @@
                 <tr>
                     <th scope="row">SVM</th>
                     <td>
-                        {% if object.qtree %}
-                        <a href="{{ object.qtree.volume.svm.get_absolute_url }}"
-                            >{{ object.qtree.volume.svm }}</a
+                        {% if object.volume and object.volume.svm %}
+                        <a href="{{ object.volume.svm.get_absolute_url }}"
+                            >{{ object.volume.svm }}</a
                         >
                         {% else %} &mdash; {% endif %}
                     </td>
