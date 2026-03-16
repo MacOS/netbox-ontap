@@ -198,18 +198,6 @@ class QuotaSerializer(NetBoxModelSerializer):
         source="qtree", queryset=QTree.objects.all(), write_only=True, required=False, allow_null=True
     )
 
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-
-        if self.instance is None and attrs.get("qtree") is None:
-            raise serializers.ValidationError(
-                {
-                    "qtree_id": "qtree_id is required.",
-                }
-            )
-
-        return attrs
-
     class Meta:
         model = Quota
         fields = (

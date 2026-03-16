@@ -115,9 +115,6 @@ class QTree(NetBoxModel):
         return reverse('plugins:netbox_ontap:qtree', args=[self.pk])
 
 class Quota(NetBoxModel):
-    prerequisite_models = (
-        'netbox_ontap.QTree',
-    )
     size = models.PositiveBigIntegerField(
         help_text='Size in bytes',
         blank=True,
@@ -130,6 +127,8 @@ class Quota(NetBoxModel):
         to=QTree,
         on_delete=models.PROTECT,
         related_name='ontap_quotas',
+        blank=True,
+        null=True,
     )
     index = models.CharField(
         max_length=100,

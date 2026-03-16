@@ -16,7 +16,7 @@ The plugin introduces 5 new object types that map directly to ONTAP concepts:
 | **Quota**  | Quota rule              | belongs to a QTree; identified by QTree + Index                          |
 | **LUN**    | LUN                     | belongs to a Volume and optionally a QTree; carries size (bytes) and WWN |
 
-All objects except QTree support a UUID field for correlation with live ONTAP data. QTrees have no UUID in ONTAP and are identified by their natural key (Volume + Name).
+SVMs and Volumes support a UUID field for correlation with live ONTAP data. QTrees have no UUID in ONTAP and are identified by their natural key (Volume + Name), Quotas are identified by the combination of Volume and Index.
 
 ### Tenant propagation
 
@@ -109,33 +109,3 @@ The plugin exposes a full CRUD API under:
 ```
 
 Supported endpoints: `svm`, `volume`, `qtree`, `quota`, `lun`.
-
----
-
-## Ansible Import / Upsert
-
-The `examples/ansible/` directory contains reusable tasks for idempotent imports from external ONTAP automation.
-
-### Task files
-
-| File                                          | Purpose                                                                                                                                  |
-|-----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| `tasks/netbox_plugin_upsert_by_uuid.yml`        | Generic upsert for objects with a UUID field (`svm`, `volume`, `lun`). Looks up by UUID, creates if absent, patches if present.      |
-| `tasks/netbox_plugin_upsert_qtree_by_key.yml`   | QTree upsert using the natural key `volume_id` + `name` (QTrees have no UUID in ONTAP). Returns `_upserted_qtree_id`.                |
-| `tasks/netbox_plugin_upsert_quota_by_key.yml`   | Quota upsert using the natural key `qtree_id` + `index` (Quota has no dedicated UUID field).                                         |
-
-### Example playbook
-
-`upsert_all_storage_objects.yml` is an end-to-end playbook that demonstrates how to feed an ONTAP inventory into NetBox:
-
-```bash
-NETBOX_TOKEN=<token> ansible-playbook examples/ansible/upsert_all_storage_objects.yml
-```
-
-Key variables:
-
-```yaml
-netbox_url: "https://netbox.example.local"
-netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
-validate_certs: true
-```
