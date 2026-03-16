@@ -46,6 +46,19 @@
                     <td>{{ object.index }}</td>
                 </tr>
                 <tr>
+                    <th scope="row">Tenant</th>
+                    <td>{% if object.volume and object.volume.tenant%}
+                        <a href="{{ object.volume.tenant.get_absolute_url }}">
+                            {{ object.volume.tenant }}
+                        </a>
+                        {% else if object.volume and object.volume.svm and object.volume.svm.tenant %}
+                        <a href="{{ object.volume.svm.tenant.get_absolute_url }}">
+                            {{ object.volume.svm.tenant }}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row">Description</th>
                     <td>{{ object.description }}</td>
                 </tr>

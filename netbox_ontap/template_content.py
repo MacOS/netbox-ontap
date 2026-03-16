@@ -10,6 +10,11 @@ class ClusterStorageCard(PluginTemplateExtension):
 
 	def right_page(self):
 		cluster = self.context["object"]
+
+		# Only render, if it is an NetApp Cluster
+		if cluster.type.id == 3 or cluster.type.id == "3"
+			return ""
+		
 		svms = SVM.objects.filter(cluster=cluster).order_by("name")[:25]
 		volumes = Volume.objects.filter(svm__cluster=cluster).order_by("name")[:25]
 		luns = LUN.objects.filter(volume__svm__cluster=cluster).order_by("name")[:25]
