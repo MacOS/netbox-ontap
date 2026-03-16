@@ -36,6 +36,18 @@ class SVM(NetBoxModel):
 
     class Meta:
         ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('uuid',),
+                condition=models.Q(uuid__isnull=False),
+                name='netbox_ontap_svm_uuid_unique_not_null',
+            ),
+        ]
+
+    def clean(self):
+        super().clean()
+        if not self.uuid:
+            self.uuid = None
 
     def __str__(self):
         return self.name
@@ -74,9 +86,18 @@ class Volume(NetBoxModel):
     class Meta:
         ordering = ('name',)
         unique_together = ('tenant', 'name')
+        constraints = [
+            models.UniqueConstraint(
+                fields=('uuid',),
+                condition=models.Q(uuid__isnull=False),
+                name='netbox_ontap_volume_uuid_unique_not_null',
+            ),
+        ]
 
     def clean(self):
         super().clean()
+        if not self.uuid:
+            self.uuid = None
         if self.tenant and self.svm and self.svm.tenant and self.tenant_id != self.svm.tenant_id:
             raise ValidationError({
                 'tenant': 'Tenant of Volume cannot differ from Tenant of SVM.'
@@ -214,6 +235,13 @@ class LUN(NetBoxModel):
     class Meta:
         ordering = ('name',)
         unique_together = ('tenant', 'name')
+        constraints = [
+            models.UniqueConstraint(
+                fields=('uuid',),
+                condition=models.Q(uuid__isnull=False),
+                name='netbox_ontap_lun_uuid_unique_not_null',
+            ),
+        ]
 
     def _get_effective_tenant_id(self):
         if self.volume.tenant_id:
@@ -225,6 +253,9 @@ class LUN(NetBoxModel):
     def clean(self):
         super().clean()
         errors = {}
+
+        if not self.uuid:
+            self.uuid = None
 
         effective_tenant_id = self._get_effective_tenant_id()
 
