@@ -44,7 +44,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Volume</th>
+                            <th>SVM</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,6 +79,9 @@
 
         <div class="mb-3">
             <strong>LUNs ({{ luns|length }})</strong>
+            <div class="text-muted small mt-1">
+                Total LUN size: {{ total_lun_size|filesizeformat }}
+            </div>
             <div
                 class="table-responsive mt-2"
                 style="max-height: 220px; overflow-y: auto"
@@ -88,6 +91,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Volume</th>
+                            <th class="text-end">Size</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -107,10 +111,11 @@
                                 <span class="text-muted">-</span>
                                 {% endif %}
                             </td>
+                            <td class="text-end">{{ lun.size_display }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="2" class="text-muted">
+                            <td colspan="3" class="text-muted">
                                 No LUNs assigned to this tenant.
                             </td>
                         </tr>
@@ -142,10 +147,9 @@
                         {% for quota in quotas %}
                         <tr>
                             <td>
-                                {% if quota.qtree and quota.qtree.volume %}
-                                <a
-                                    href="{{ quota.qtree.volume.get_absolute_url }}"
-                                    >{{ quota.qtree.volume.name }}</a
+                                {% if quota.volume %}
+                                <a href="{{ quota.volume.get_absolute_url }}"
+                                    >{{ quota.volume.name }}</a
                                 >
                                 {% else %}
                                 <span class="text-muted">-</span>

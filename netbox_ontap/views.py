@@ -8,14 +8,38 @@ class SVMView(generic.ObjectView):
     queryset = models.SVM.objects.all()
 
     def get_extra_context(self, request, instance):
-        volumes_table = tables.VolumeTable(instance.ontap_volumes.all())
+        volumes = instance.ontap_volumes.all()
+
+        tenant_owners = (
+            models.Tenant.objects.filter(
+                Q(ontap_svms=instance)
+                | Q(ontap_volumes__svm=instance)
+                | Q(ontap_luns__volume__svm=instance)
+                | Q(ontap_luns__qtree__volume__svm=instance)
+            )
+            .distinct()
+            .order_by("name")
+        )
+
+        volumes_table = tables.VolumeTable(volumes)
         volumes_table.configure(request)
 
-        luns_table = tables.LUNTable(models.LUN.objects.filter(volume__svm=instance).distinct())
+        qtrees_table = tables.QTreeTable(models.QTree.objects.filter(volume__in=volumes).distinct())
+        qtrees_table.configure(request)
+
+        quotas_table = tables.QuotaTable(models.Quota.objects.filter(volume__in=volumes).distinct())
+        quotas_table.configure(request)
+
+        luns_table = tables.LUNTable(
+            models.LUN.objects.filter(Q(volume__in=volumes) | Q(qtree__volume__in=volumes)).distinct()
+        )
         luns_table.configure(request)
 
         return {
+            "tenant_owners": tenant_owners,
             "volumes_table": volumes_table,
+            "qtrees_table": qtrees_table,
+            "quotas_table": quotas_table,
             "luns_table": luns_table,
         }
 

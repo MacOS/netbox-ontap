@@ -1,8 +1,5 @@
-{% extends 'generic/object.html' %}
-{% load render_table from django_tables2 %}
-{% load helpers %}
-
-{% block content %}
+{% extends 'generic/object.html' %} {% load render_table from django_tables2 %}
+{% load helpers %} {% block content %}
 <div class="row mb-3">
     <div class="col col-md-6">
         <div class="card">
@@ -16,20 +13,20 @@
                     <th scope="row">Cluster</th>
                     <td>
                         {% if object.cluster %}
-                        <a href="{{ object.cluster.get_absolute_url }}">{{ object.cluster }}</a>
-                        {% else %}
-                        &mdash;
-                        {% endif %}
+                        <a href="{{ object.cluster.get_absolute_url }}"
+                            >{{ object.cluster }}</a
+                        >
+                        {% else %} &mdash; {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">Tenant</th>
                     <td>
                         {% if object.tenant %}
-                        <a href="{{ object.tenant.get_absolute_url }}">{{ object.tenant }}</a>
-                        {% else %}
-                        &mdash;
-                        {% endif %}
+                        <a href="{{ object.tenant.get_absolute_url }}"
+                            >{{ object.tenant }}</a
+                        >
+                        {% else %} &mdash; {% endif %}
                     </td>
                 </tr>
                 <tr>
@@ -46,6 +43,26 @@
     </div>
     <div class="col col-md-6">
         {% include 'inc/panels/tags.html' %}
+        <div class="card mt-3">
+            <h5 class="card-header">Tenant Ownership</h5>
+            <div class="card-body">
+                {% if tenant_owners %}
+                <ul class="list-group list-group-flush">
+                    {% for tenant in tenant_owners %}
+                    <li class="list-group-item px-0 py-1">
+                        <a href="{{ tenant.get_absolute_url }}"
+                            >{{ tenant.name }}</a
+                        >
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <span class="text-muted"
+                    >No tenants own objects on this SVM.</span
+                >
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -61,6 +78,18 @@
             <h5 class="card-header">LUNs</h5>
             <div class="card-body table-responsive">
                 {% render_table luns_table %}
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">QTrees</h5>
+            <div class="card-body table-responsive">
+                {% render_table qtrees_table %}
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">Quotas</h5>
+            <div class="card-body table-responsive">
+                {% render_table quotas_table %}
             </div>
         </div>
     </div>
