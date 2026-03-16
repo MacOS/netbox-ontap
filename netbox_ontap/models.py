@@ -89,7 +89,7 @@ class Volume(NetBoxModel):
         verbose_name = 'Volume'
         verbose_name_plural = 'Volumes'
         ordering = ('name',)
-        unique_together = ('tenant', 'name')
+        unique_together = ('svm', 'name')
         constraints = [
             models.UniqueConstraint(
                 fields=('uuid',),
