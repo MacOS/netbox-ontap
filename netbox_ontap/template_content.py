@@ -2,7 +2,7 @@ from netbox.plugins import PluginTemplateExtension
 from django.db.models import Q, Sum
 from django.template.defaultfilters import filesizeformat
 
-from .models import LUN, Quota, SVM, Volume
+from .models import LUN, QTree, Quota, SVM, Volume
 
 
 class ClusterStorageCard(PluginTemplateExtension):
@@ -44,7 +44,7 @@ class TenantStorageCard(PluginTemplateExtension):
 			.order_by("name")
 		)
 
-		qtrees = models.QTree.objects.filter(volume__in=volumes).distinct()
+		qtrees = QTree.objects.filter(volume__in=volumes).distinct()
 
 		luns = (
 			LUN.objects.filter(
