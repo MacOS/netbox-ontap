@@ -35,6 +35,8 @@ class SVM(NetBoxModel):
     )
 
     class Meta:
+        verbose_name = 'SVM'
+        verbose_name_plural = 'SVMs'
         ordering = ('name',)
         constraints = [
             models.UniqueConstraint(
@@ -84,6 +86,8 @@ class Volume(NetBoxModel):
         related_name='ontap_volumes'
     )
     class Meta:
+        verbose_name = 'Volume'
+        verbose_name_plural = 'Volumes'
         ordering = ('name',)
         unique_together = ('tenant', 'name')
         constraints = [
@@ -126,6 +130,8 @@ class QTree(NetBoxModel):
         blank=True
     )
     class Meta:
+        verbose_name = 'QTree'
+        verbose_name_plural = 'QTrees'
         ordering = ('name', 'volume__name')
         unique_together = ('volume', 'name')
 
@@ -168,6 +174,8 @@ class Quota(NetBoxModel):
     )
     
     class Meta:
+        verbose_name = 'Quota'
+        verbose_name_plural = 'Quotas'
         ordering = ('volume__name', 'index')
 
     def clean(self):
@@ -233,6 +241,8 @@ class LUN(NetBoxModel):
     )
 
     class Meta:
+        verbose_name = 'LUN'
+        verbose_name_plural = 'LUNs'
         ordering = ('name',)
         unique_together = ('tenant', 'name')
         constraints = [
