@@ -12,7 +12,7 @@ class ClusterStorageCard(PluginTemplateExtension):
 		cluster = self.context["object"]
 
 		# Only render, if it is an NetApp Cluster
-		if cluster.type.id == 3 or cluster.type.id == "3"
+		if cluster.type.id == 3 or cluster.type.id == "3":
 			return ""
 		
 		svms = SVM.objects.filter(cluster=cluster).order_by("name")[:25]
