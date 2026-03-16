@@ -44,7 +44,22 @@ class QTreeForm(NetBoxModelForm):
 
 class QuotaForm(NetBoxModelForm):
     volume = DynamicModelChoiceField(queryset=Volume.objects.all())
-    qtree = DynamicModelChoiceField(queryset=QTree.objects.all(), required=False)
+    qtree = DynamicModelChoiceField(
+        queryset=QTree.objects.all(),
+        required=False,
+        query_params={"volume": "$volume"},
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        volume = cleaned_data.get("volume")
+        qtree = cleaned_data.get("qtree")
+
+        # Keep volume and qtree aligned in the form UX.
+        if qtree and (not volume or qtree.volume_id != volume.id):
+            cleaned_data["volume"] = qtree.volume
+
+        return cleaned_data
 
     class Meta:
         model = Quota
@@ -53,7 +68,21 @@ class QuotaForm(NetBoxModelForm):
 
 class LUNForm(NetBoxModelForm):
     volume = DynamicModelChoiceField(queryset=Volume.objects.all())
-    qtree = DynamicModelChoiceField(queryset=QTree.objects.all(), required=False)
+    qtree = DynamicModelChoiceField(
+        queryset=QTree.objects.all(),
+        required=False,
+        query_params={"volume": "$volume"},
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        volume = cleaned_data.get("volume")
+        qtree = cleaned_data.get("qtree")
+
+        if qtree and (not volume or qtree.volume_id != volume.id):
+            cleaned_data["volume"] = qtree.volume
+
+        return cleaned_data
 
     class Meta:
         model = LUN
