@@ -51,7 +51,7 @@
                         <a href="{{ object.volume.tenant.get_absolute_url }}">
                             {{ object.volume.tenant }}
                         </a>
-                        {% else if object.volume and object.volume.svm and object.volume.svm.tenant %}
+                        {% elif object.volume and object.volume.svm and object.volume.svm.tenant %}
                         <a href="{{ object.volume.svm.tenant.get_absolute_url }}">
                             {{ object.volume.svm.tenant }}
                         </a>
