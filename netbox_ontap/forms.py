@@ -51,7 +51,8 @@ class QuotaForm(NetBoxModelForm):
     )
 
     def clean(self):
-        cleaned_data = super().clean()
+        super().clean()
+        cleaned_data = self.cleaned_data
         volume = cleaned_data.get("volume")
         qtree = cleaned_data.get("qtree")
 
@@ -75,7 +76,8 @@ class LUNForm(NetBoxModelForm):
     )
 
     def clean(self):
-        cleaned_data = super().clean()
+        super().clean()
+        cleaned_data = self.cleaned_data
         volume = cleaned_data.get("volume")
         qtree = cleaned_data.get("qtree")
 

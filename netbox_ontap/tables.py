@@ -104,7 +104,7 @@ class LUNTable(NetBoxTable):
             "wwn",
             "uuid",
             "description", 
-            "svm"
+            "svm",
             "actions",
         )
         default_columns = ("name", "tenant", "volume", "qtree", "size")

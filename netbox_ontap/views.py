@@ -1,5 +1,6 @@
 from netbox.views import generic
 from django.db.models import Q
+from tenancy.models import Tenant
 
 from . import filtersets, forms, models, tables
 
@@ -11,7 +12,7 @@ class SVMView(generic.ObjectView):
         volumes = instance.ontap_volumes.all()
 
         tenant_owners = (
-            models.Tenant.objects.filter(
+            Tenant.objects.filter(
                 Q(ontap_svms=instance)
                 | Q(ontap_volumes__svm=instance)
                 | Q(ontap_luns__volume__svm=instance)
