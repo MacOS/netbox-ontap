@@ -2,7 +2,7 @@ import django_tables2 as tables
 
 from django.template.defaultfilters import filesizeformat
 from netbox.tables import NetBoxTable
-from django.db.models.funcctions import Coalesce, Concat
+from django.db.models.functions import Coalesce, Concat
 from django.db.models import Value
 
 from .models import LUN, QTree, Quota, SVM, Volume
@@ -70,7 +70,7 @@ class QuotaTable(NetBoxTable):
             )
         )
         modifier = '-' if is_descending else ''
-        return queryset.order_by(f"{modifier}_display_name_sort", True)
+        return (queryset.order_by(f"{modifier}_display_name_sort"), True)
 
     def order_tenant(self, queryset, is_descending):
         queryset = queryset.annotate(
