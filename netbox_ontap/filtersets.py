@@ -55,7 +55,7 @@ class QTreeFilterSet(NetBoxModelFilterSet):
         queryset=Tenant.objects.all(),
         method='filter_tenant',
         to_field_name='slug',
-        tabel='Tenant (Slug)'
+        label='Tenant (Slug)'
     )
 
     class Meta:
@@ -99,7 +99,7 @@ class QuotaFilterSet(NetBoxModelFilterSet):
         queryset=Tenant.objects.all(),
         method='filter_tenant',
         to_field_name='slug',
-        tabel='Tenant (Slug)'
+        label='Tenant (Slug)'
     )
 
     class Meta:
