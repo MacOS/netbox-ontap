@@ -12,18 +12,18 @@
                 <tr>
                     <th scope="row">Volume</th>
                     <td>
-                        <a href="{{ object.volume.get_absolute_url }}"
-                            >{{ object.volume }}</a
-                        >
+                        {{ object.volume | linkify }}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">SVM</th>
                     <td>
-                        <a href="{{ object.volume.svm.get_absolute_url }}"
-                            >{{ object.volume.svm }}</a
-                        >
+                        {{ object.volume.svm | linkify }}
                     </td>
+                </tr>
+                <tr>
+                    <th scope="row">Tenant</th>
+                    <td>{{ object.tenant | linkify | placeholder}}</td>
                 </tr>
                 <tr>
                     <th scope="row">Description</th>

@@ -113,6 +113,16 @@ class QTreeFilterForm(NetBoxModelFilterSetForm):
     model = QTree
     volume = DynamicModelMultipleChoiceField(queryset=Volume.objects.all(), required=False)
     name = forms.CharField(required=False)
+    svm_id = DynamicModelMultipleChoiceField(
+        queryset=SVM.objects.all(),
+        required=False,
+        label='SVM'
+    )
+    tenant_id = DynamicModelMultipleChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False,
+        label='Tenant'
+    )
 
 
 class QuotaFilterForm(NetBoxModelFilterSetForm):
@@ -120,6 +130,16 @@ class QuotaFilterForm(NetBoxModelFilterSetForm):
     volume = DynamicModelMultipleChoiceField(queryset=Volume.objects.all(), required=False)
     qtree = DynamicModelMultipleChoiceField(queryset=QTree.objects.all(), required=False)
     index = forms.CharField(required=False, label="Quota Index")
+    svm_id = DynamicModelMultipleChoiceField(
+        queryset=SVM.objects.all(),
+        required=False,
+        label='SVM'
+    )
+    tenant_id = DynamicModelMultipleChoiceField(
+        queryset=Tenant.objects.all(),
+        required=False,
+        label='Tenant'
+    )
 
 
 class LUNFilterForm(NetBoxModelFilterSetForm):
@@ -130,6 +150,11 @@ class LUNFilterForm(NetBoxModelFilterSetForm):
     name = forms.CharField(required=False)
     wwn = forms.CharField(required=False, label="WWN")
     uuid = forms.CharField(required=False, label="ONTAP LUN UUID")
+    svm_id = DynamicModelMultipleChoiceField(
+        queryset=SVM.objects.all(),
+        required=False,
+        label='SVM'
+    )
 
 
 #

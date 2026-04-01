@@ -47,15 +47,8 @@
                 </tr>
                 <tr>
                     <th scope="row">Tenant</th>
-                    <td>{% if object.volume and object.volume.tenant%}
-                        <a href="{{ object.volume.tenant.get_absolute_url }}">
-                            {{ object.volume.tenant }}
-                        </a>
-                        {% elif object.volume and object.volume.svm and object.volume.svm.tenant %}
-                        <a href="{{ object.volume.svm.tenant.get_absolute_url }}">
-                            {{ object.volume.svm.tenant }}
-                        </a>
-                        {% endif %}
+                    <td>
+                        {{ object.tenant | linkify | placeholder }}
                     </td>
                 </tr>
                 <tr>

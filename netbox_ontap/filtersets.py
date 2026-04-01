@@ -1,5 +1,8 @@
 from netbox.filtersets import NetBoxModelFilterSet
 from django.db.models import Q
+import django_filters
+
+from tenancy.models import Tenant
 
 from .models import LUN, QTree, Quota, SVM, Volume
 
@@ -31,6 +34,30 @@ class VolumeFilterSet(NetBoxModelFilterSet):
 
 
 class QTreeFilterSet(NetBoxModelFilterSet):
+    svm_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=SVM.objects.all(),
+        field_name='volume__svm',
+        label='SVM (ID)'
+    )
+    svm = django_filters.ModelMultipleChoiceFilter(
+        queryset=SVM.objects.all(),
+        field_name='volume__svm__name',
+        to_field_name='name',
+        label='SVM (Name)'
+    )
+
+    tenant_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Tenant.objects.all(),
+        method='filter_tenant',
+        label='Tenant (ID)',
+    )
+    tenant =  django_filters.ModelMultipleChoiceFilter(
+        queryset=Tenant.objects.all(),
+        method='filter_tenant',
+        to_field_nam='slug',
+        tabel='Tenant (Slug)'
+    )
+
     class Meta:
         model = QTree
         fields = ("id", "name", "volume")
@@ -42,8 +69,39 @@ class QTreeFilterSet(NetBoxModelFilterSet):
             | Q(volume__uuid__icontains=value)
         )
 
+    def filter_tenant(self, queryset, name, value):
+        if not value:
+            return queryset
+
+        return queryset.filter(
+            Q(volume__tenant__in=value) | Q(volume__svm__tenant__in=value)
+        ).distinct()
+
 
 class QuotaFilterSet(NetBoxModelFilterSet):
+    svm = django_filters.ModelMultipleChoiceFilter(
+        queryset=SVM.objects.all(),
+        field_name='volume__svm__name',
+        to_field_name='name',
+        label='SVM (Name)'
+    )
+    svm_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=SVM.objects.all(),
+        field_name='volume__svm',
+    )
+
+    tenant_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=Tenant.objects.all(),
+        method='filter_tenant',
+        label='Tenant (ID)',
+    )
+    tenant =  django_filters.ModelMultipleChoiceFilter(
+        queryset=Tenant.objects.all(),
+        method='filter_tenant',
+        to_field_nam='slug',
+        tabel='Tenant (Slug)'
+    )
+
     class Meta:
         model = Quota
         fields = ("id", "volume", "qtree", "index")
@@ -55,6 +113,13 @@ class QuotaFilterSet(NetBoxModelFilterSet):
             | Q(volume__uuid__icontains=value)
             | Q(qtree__name__icontains=value)
         )
+
+    def filter_tenant(self, queryset, name, value):
+        if not value:
+            return queryset
+        return queryset.filter(
+            Q(volume__tenant__in=value) | Q(volume__svm__tenant__in=value)
+        ).distinct()
 
 
 class LUNFilterSet(NetBoxModelFilterSet):
