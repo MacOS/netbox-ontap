@@ -66,7 +66,7 @@ class QuotaTable(NetBoxTable):
             _display_name_sort=Concat(
                 'volume__name',
                 Value(' - '),
-                Coalesce('qtree_name', Value('0'))
+                Coalesce('qtree__name', Value('0'))
             )
         )
         modifier = '-' if is_descending else ''
