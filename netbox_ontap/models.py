@@ -129,6 +129,19 @@ class QTree(NetBoxModel):
     description = models.TextField(
         blank=True
     )
+
+    @property
+    def svm(self):
+        return self.volume.svm
+
+    @property
+    def tenant(self):
+        if self.volume.tenant_id:
+            return self.volume.tenant
+        if self.volume.svm and self.volume.svm.tenant_id:
+            return self.volume.svm.tenant
+        return None
+
     class Meta:
         verbose_name = 'QTree'
         verbose_name_plural = 'QTrees'
@@ -172,6 +185,18 @@ class Quota(NetBoxModel):
         null=True,
         verbose_name="Quota Index"
     )
+
+    @property
+    def svm(self):
+        return self.volume.svm
+
+    @property
+    def tenant(self):
+        if self.volume.tenant_id:
+            return self.volume.tenant
+        if self.volume.svm and self.volume.svm.tenant_id:
+            return self.volume.svm.tenant
+        return None
     
     class Meta:
         verbose_name = 'Quota'
@@ -239,6 +264,10 @@ class LUN(NetBoxModel):
         null=True,
         verbose_name="ONTAP LUN UUID"
     )
+
+    @property
+    def svm(self):
+        return self.volume.svm
 
     class Meta:
         verbose_name = 'LUN'

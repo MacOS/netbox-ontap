@@ -54,7 +54,7 @@ class QTreeFilterSet(NetBoxModelFilterSet):
     tenant =  django_filters.ModelMultipleChoiceFilter(
         queryset=Tenant.objects.all(),
         method='filter_tenant',
-        to_field_nam='slug',
+        to_field_name='slug',
         tabel='Tenant (Slug)'
     )
 
@@ -98,7 +98,7 @@ class QuotaFilterSet(NetBoxModelFilterSet):
     tenant =  django_filters.ModelMultipleChoiceFilter(
         queryset=Tenant.objects.all(),
         method='filter_tenant',
-        to_field_nam='slug',
+        to_field_name='slug',
         tabel='Tenant (Slug)'
     )
 
