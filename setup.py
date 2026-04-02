@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='netbox-ontap-plugin',
-    version='1.0.0',
+    version='1.1.0',
     description='NetBox ONTAP plugin',
     long_description=long_description,
     long_description_content_type='text/markdown',
