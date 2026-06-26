@@ -1,6 +1,6 @@
 from extras.dashboard.widgets import ObjectCountsWidget
 from extras.dashboard.utils import register_widget
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 @register_widget
 class OntapObjectCountsWidget(ObjectCountsWidget):
@@ -16,3 +16,6 @@ class OntapObjectCountsWidget(ObjectCountsWidget):
             'netbox_ontap.lun',
         ]
     }
+    
+    def render(self, context):
+        return super().render(context)
