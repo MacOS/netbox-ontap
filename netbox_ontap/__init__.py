@@ -9,5 +9,10 @@ class NetBoxOntapConfig(PluginConfig):
     min_version = "4.3.0"
     author = 'Gabor Somogyvari, Leonhard Kreißig'
 
+    def ready(self):
+        super().ready()
+        from . import widgets
+
+
 
 config = NetBoxOntapConfig
