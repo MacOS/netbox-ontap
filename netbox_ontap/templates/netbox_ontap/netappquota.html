@@ -25,11 +25,23 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">Size</th>
+                    <th scope="row">Space Hard Limit</th>
                     <td>
-                        {% if object.size %} {{ object.size|filesizeformat }}
-                        {%else %} Metering quota {% endif %}
+                        {% if object.space_hard_limit is None %} Metering quota
+                        {% else %} {{ object.space_hard_limit|filesizeformat }} {% endif %}
                     </td>
+                </tr>
+                <tr>
+                    <th scope="row">Space Soft Limit</th>
+                    <td>{% if object.space_soft_limit is None %}&mdash;{% else %}{{ object.space_soft_limit|filesizeformat }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Files Hard Limit</th>
+                    <td>{{ object.files_hard_limit|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Files Soft Limit</th>
+                    <td>{{ object.files_soft_limit|placeholder }}</td>
                 </tr>
                 <tr>
                     <th scope="row">SVM</th>

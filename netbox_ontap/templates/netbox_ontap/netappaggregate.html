@@ -1,0 +1,59 @@
+{% extends 'generic/object.html' %} {% load render_table from django_tables2 %}
+{% load helpers %} {% block content %}
+<div class="row mb-3">
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">Aggregate</h5>
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>{{ object.name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Node</th>
+                    <td>
+                        <a href="{{ object.node.get_absolute_url }}"
+                            >{{ object.node }}</a
+                        >
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Cluster</th>
+                    <td>
+                        <a href="{{ object.cluster.get_absolute_url }}"
+                            >{{ object.cluster }}</a
+                        >
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Size</th>
+                    <td>{{ object.size|filesizeformat|default:'—' }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">ONTAP Aggregate UUID</th>
+                    <td>{{ object.uuid|default:'—' }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Description</th>
+                    <td>{{ object.description|default:'—' }}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+        {% include 'inc/panels/tags.html' %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col col-md-12">
+        <div class="card">
+            <h5 class="card-header">Volumes</h5>
+            <div class="card-body table-responsive">
+                {% render_table volumes_table %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

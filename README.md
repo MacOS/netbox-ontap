@@ -6,17 +6,27 @@ A [NetBox](https://github.com/netbox-community/netbox) plugin for documenting Ne
 
 ## Data Model
 
-The plugin introduces 5 new object types that map directly to ONTAP concepts:
+The plugin introduces 9 object types that map to ONTAP concepts:
 
-| Object     | ONTAP Equivalent        | Key Relations                                                            |
-|------------|-------------------------|--------------------------------------------------------------------------|
-| **SVM**    | Storage Virtual Machine | linked to a NetBox Virtualization Cluster and optionally a Tenant        |
-| **Volume** | ONTAP Volume            | belongs to an SVM; inherits Tenant from SVM                              |
-| **QTree**  | Qtree                   | belongs to a Volume; unique per Volume                                   |
-| **Quota**  | Quota rule              | belongs to a QTree; identified by QTree + Index                          |
-| **LUN**    | LUN                     | belongs to a Volume and optionally a QTree; carries size (bytes) and WWN |
+| Object        | ONTAP Equivalent        | Key Relations                                                            |
+|---------------|-------------------------|--------------------------------------------------------------------------|
+| **Cluster**   | ONTAP Cluster           | optional Management IP (`ipam.IPAddress`); supports NetBox Contacts     |
+| **Node**      | Cluster Node            | belongs to a Cluster; optional 1:1 link to a DCIM Device                |
+| **HA Pair**   | ONTAP HA pair           | two distinct Nodes from the same Cluster; each Node can join one pair   |
+| **Aggregate** | Storage Aggregate       | belongs to a Node                                                        |
+| **SVM**       | Storage Virtual Machine | belongs to a Cluster and optionally a Tenant                             |
+| **Volume**    | ONTAP Volume            | belongs to an SVM and an Aggregate; inherits Tenant from SVM; optional provisioned size (bytes) |
+| **QTree**     | Qtree                   | belongs to a Volume; unique per Volume                                   |
+| **Quota**     | Quota rule              | belongs to a Volume and optionally a QTree; carries optional space and file hard/soft limits |
+| **LUN**       | LUN                     | belongs to a Volume and optionally a QTree; carries size (bytes), WWN, and OS type |
 
-SVMs and Volumes support a UUID field for correlation with live ONTAP data. QTrees have no UUID in ONTAP and are identified by their natural key (Volume + Name), Quotas are identified by the combination of Volume and Index.
+Cluster, Node, Aggregate, SVM and Volume support a UUID field for correlation with live ONTAP data. QTrees have no UUID in ONTAP and are identified by their natural key (Volume + Name), Quotas are identified by the combination of Volume and Index.
+
+A Volume's Aggregate must belong to the same Cluster as the Volume's SVM; a `ValidationError` is raised otherwise. An HA Pair's Nodes must belong to the same Cluster and may not be identical.
+
+### Physical location
+
+A Cluster's physical location is derived through its Nodes (`Node.device.site`), not stored redundantly on the Cluster itself.
 
 ### Tenant propagation
 
@@ -30,9 +40,8 @@ A `ValidationError` is raised if a manually set Tenant contradicts the inherited
 
 ### UI extensions
 
-The plugin adds a **Storage** card on the detail pages of:
+The plugin adds a **Storage** card on the detail page of:
 
-- **Virtualization Cluster** – shows the SVMs, Volumes, and LUNs associated with the cluster.
 - **Tenant** – shows all SVMs, Volumes, LUNs, and Quotas for the tenant, including a total quota size.
 
 ---
@@ -91,14 +100,16 @@ sudo systemctl restart netbox netbox-rq
 
 ### Manual workflow
 
-1. Ensure a NetBox **Virtualization Cluster** and a **Tenant** already exist.
-2. Create an **SVM**, assign it to the Cluster and optionally a Tenant.
-3. Create **Volume(s)** under the SVM.
-4. Create **QTree(s)** under a Volume.
-5. Create **Quota(s)** for a QTree (specify size in bytes and an index).
-6. Create **LUN(s)** under a Volume, optionally scoped to a QTree.
+1. Create a **Cluster** (optionally set a Management IP and assign Contacts).
+2. Create **Node(s)** under the Cluster, optionally linking each to a DCIM Device.
+3. Create **Aggregate(s)** under a Node.
+4. Create an **SVM**, assign it to the Cluster and optionally a Tenant.
+5. Create **Volume(s)** under the SVM and an Aggregate belonging to the same Cluster.
+6. Create **QTree(s)** under a Volume.
+7. Create **Quota(s)** for a Volume, optionally scoped to a QTree (specify optional space/file hard and soft limits and an index).
+8. Create **LUN(s)** under a Volume, optionally scoped to a QTree.
 
-All five object types are accessible from the **Storage** navigation menu (NAS icon).
+All nine object types are accessible from the **Cluster** and **Storage** navigation menu groups (NAS icon).
 
 ### REST API
 
@@ -108,4 +119,4 @@ The plugin exposes a full CRUD API under:
 /api/plugins/ontap/<endpoint>/
 ```
 
-Supported endpoints: `svm`, `volume`, `qtree`, `quota`, `lun`.
+Supported endpoints: `cluster`, `node`, `ha-pair`, `aggregate`, `svm`, `volume`, `qtree`, `quota`, `lun`.

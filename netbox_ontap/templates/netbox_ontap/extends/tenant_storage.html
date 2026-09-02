@@ -137,6 +137,7 @@
                 <table class="table table-hover table-sm mb-0">
                     <thead>
                         <tr>
+                            <th>Quota</th>
                             <th>Volume</th>
                             <th>QTree</th>
                             <th>Index</th>
@@ -146,6 +147,9 @@
                     <tbody>
                         {% for quota in quotas %}
                         <tr>
+                            <td>
+                                <a href="{{ quota.get_absolute_url }}">{{ quota }}</a>
+                            </td>
                             <td>
                                 {% if quota.volume %}
                                 <a href="{{ quota.volume.get_absolute_url }}"
@@ -174,7 +178,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="text-muted">
+                            <td colspan="5" class="text-muted">
                                 No quotas assigned to this tenant.
                             </td>
                         </tr>

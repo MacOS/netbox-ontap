@@ -2,31 +2,7 @@ from netbox.plugins import PluginTemplateExtension
 from django.db.models import Q, Sum
 from django.template.defaultfilters import filesizeformat
 
-from .models import LUN, QTree, Quota, SVM, Volume
-
-
-class ClusterStorageCard(PluginTemplateExtension):
-	models = ["virtualization.cluster"]
-
-	def right_page(self):
-		cluster = self.context["object"]
-
-		# Only render, if it is an NetApp Cluster
-		if cluster.type.id == 3 or cluster.type.id == "3":
-			return ""
-		
-		svms = SVM.objects.filter(cluster=cluster).order_by("name")[:25]
-		volumes = Volume.objects.filter(svm__cluster=cluster).order_by("name")[:25]
-		luns = LUN.objects.filter(volume__svm__cluster=cluster).order_by("name")[:25]
-
-		return self.render(
-			"netbox_ontap/extends/cluster_storage.html",
-			extra_context={
-				"svms": svms,
-				"volumes": volumes,
-				"luns": luns,
-			},
-		)
+from .models import NetAppLUN, NetAppQTree, NetAppQuota, NetAppSVM, NetAppVolume
 
 
 class TenantStorageCard(PluginTemplateExtension):
@@ -34,12 +10,14 @@ class TenantStorageCard(PluginTemplateExtension):
 
 	def right_page(self):
 		tenant = self.context["object"]
-		svms = SVM.objects.filter(tenant=tenant).distinct().order_by("name")
+		request = self.context["request"]
+		svms = NetAppSVM.objects.restrict(request.user, "view").filter(tenant=tenant).distinct().order_by("name")
 
 		# One-way expansion: direct SVM assignment includes all child objects.
 		# A volume assigned to a tenant must not implicitly expose the whole SVM.
 		volumes = (
-			Volume.objects.filter(
+			NetAppVolume.objects.restrict(request.user, "view")
+			.filter(
 				Q(tenant=tenant)
 				| Q(svm__in=svms)
 				| Q(ontap_luns__tenant=tenant)
@@ -49,13 +27,14 @@ class TenantStorageCard(PluginTemplateExtension):
 			.order_by("name")
 		)
 
-		qtrees = QTree.objects.filter(volume__in=volumes).distinct()
+		qtrees = NetAppQTree.objects.restrict(request.user, "view").filter(volume__in=volumes).distinct()
 
 		luns = (
-			LUN.objects.filter(
+			NetAppLUN.objects.restrict(request.user, "view")
+			.filter(
 				Q(tenant=tenant)
-				| Q(volume__in=volumes)
-				| Q(qtree__in=qtrees)
+				| Q(tenant__isnull=True, volume__tenant=tenant)
+				| Q(tenant__isnull=True, volume__tenant__isnull=True, volume__svm__tenant=tenant)
 			)
 			.select_related("volume", "volume__svm", "qtree", "qtree__volume")
 			.distinct()
@@ -66,14 +45,15 @@ class TenantStorageCard(PluginTemplateExtension):
 		total_lun_size = luns.aggregate(total=Sum("size"))["total"] or 0
 
 		quotas = (
-			Quota.objects.filter(Q(volume__in=volumes) | Q(qtree__in=qtrees))
+			NetAppQuota.objects.restrict(request.user, "view")
+			.filter(Q(volume__in=volumes) | Q(qtree__in=qtrees))
 			.select_related("volume", "qtree", "qtree__volume")
 			.distinct()
 			.order_by("volume__name", "qtree__name", "index")
 		)
 		for quota in quotas:
-			quota.size_display = filesizeformat(quota.size) if quota.size else "-"
-		total_quota_size = quotas.aggregate(total=Sum("size"))["total"] or 0
+			quota.size_display = "Metering quota" if quota.space_hard_limit is None else filesizeformat(quota.space_hard_limit)
+		total_quota_size = quotas.aggregate(total=Sum("space_hard_limit"))["total"] or 0
 
 		return self.render(
 			"netbox_ontap/extends/tenant_storage.html",
@@ -88,4 +68,4 @@ class TenantStorageCard(PluginTemplateExtension):
 		)
 
 
-template_extensions = [ClusterStorageCard, TenantStorageCard]
+template_extensions = [TenantStorageCard]

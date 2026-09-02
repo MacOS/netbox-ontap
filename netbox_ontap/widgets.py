@@ -9,11 +9,14 @@ class OntapObjectCountsWidget(ObjectCountsWidget):
     
     default_config = {
         'models': [
-            'netbox_ontap.svm',
-            'netbox_ontap.volume',
-            'netbox_ontap.qtree',
-            'netbox_ontap.quota',
-            'netbox_ontap.lun',
+            'netbox_ontap.netappcluster',
+            'netbox_ontap.netappnode',
+            'netbox_ontap.netappaggregate',
+            'netbox_ontap.netappsvm',
+            'netbox_ontap.netappvolume',
+            'netbox_ontap.netappqtree',
+            'netbox_ontap.netappquota',
+            'netbox_ontap.netapplun',
         ]
     }
     

@@ -11,11 +11,13 @@
                 <tr>
                     <th scope="row">Tenant</th>
                     <td>
-                        {% if object.tenant %}
-                        <a href="{{ object.tenant.get_absolute_url }}"
-                            >{{ object.tenant }}</a
+                        {% with tenant=object.get_tenant %}
+                        {% if tenant %}
+                        <a href="{{ tenant.get_absolute_url }}"
+                            >{{ tenant }}</a
                         >
                         {% else %} &mdash; {% endif %}
+                        {% endwith %}
                     </td>
                 </tr>
 

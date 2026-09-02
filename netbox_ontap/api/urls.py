@@ -5,6 +5,9 @@ from . import views
 app_name = 'netbox_ontap'
 
 router = NetBoxRouter()
+router.register('cluster', views.ClusterViewSet)
+router.register('node', views.NodeViewSet)
+router.register('aggregate', views.AggregateViewSet)
 router.register('svm', views.SVMViewSet)
 router.register('volume', views.VolumeViewSet)
 router.register('qtree', views.QTreeViewSet)

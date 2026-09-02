@@ -1,0 +1,65 @@
+{% extends 'generic/object.html' %} {% load render_table from django_tables2 %}
+{% load helpers %} {% block content %}
+<div class="row mb-3">
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">Cluster</h5>
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>{{ object.name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Management IP</th>
+                    <td>
+                        {% if object.management_ip %}
+                        <a href="{{ object.management_ip.get_absolute_url }}"
+                            >{{ object.management_ip }}</a
+                        >
+                        {% else %} &mdash; {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">ONTAP Version</th>
+                    <td>{{ object.ontap_version|default:'—' }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">ONTAP Cluster UUID</th>
+                    <td>{{ object.uuid|default:'—' }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Description</th>
+                    <td>{{ object.description|default:'—' }}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+        {% include 'inc/panels/tags.html' %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col col-md-12">
+        <div class="card">
+            <h5 class="card-header">Nodes</h5>
+            <div class="card-body table-responsive">
+                {% render_table nodes_table %}
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">Aggregates</h5>
+            <div class="card-body table-responsive">
+                {% render_table aggregates_table %}
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">SVMs</h5>
+            <div class="card-body table-responsive">
+                {% render_table svms_table %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

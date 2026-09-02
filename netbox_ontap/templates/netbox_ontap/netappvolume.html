@@ -19,13 +19,29 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">Tenant</th>
+                    <th scope="row">Aggregate</th>
                     <td>
-                        {% if object.tenant %}
-                        <a href="{{ object.tenant.get_absolute_url }}">{{ object.tenant }}</a>
+                        {% if object.aggregate %}
+                        <a href="{{ object.aggregate.get_absolute_url }}">{{ object.aggregate }}</a>
                         {% else %}
                         &mdash;
                         {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Size</th>
+                    <td>{{ object.size|filesizeformat|default:'—' }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tenant</th>
+                    <td>
+                        {% with tenant=object.get_tenant %}
+                        {% if tenant %}
+                        <a href="{{ tenant.get_absolute_url }}">{{ tenant }}</a>
+                        {% else %}
+                        &mdash;
+                        {% endif %}
+                        {% endwith %}
                     </td>
                 </tr>
                 <tr>
