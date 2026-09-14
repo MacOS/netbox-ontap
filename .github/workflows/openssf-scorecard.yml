@@ -10,6 +10,8 @@
 name: OpenSSF Scorecard
 
 on:
+  workflow_dispatch:
+  
   push:
     # Only the default branch is supported.
     branches:
