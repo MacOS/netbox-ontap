@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Gabor Somogyvari, Leonhard Kreißig (Deutsche Telekom AG) <leonhard.kreissig@telekom.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 import django_tables2 as tables
 
 from django.template.defaultfilters import filesizeformat

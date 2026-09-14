@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Gabor Somogyvari, Leonhard Kreißig (Deutsche Telekom AG) <leonhard.kreissig@telekom.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from netbox.views import generic
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render

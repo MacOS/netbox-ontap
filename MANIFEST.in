@@ -1,1 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Gabor Somogyvari, Leonhard Kreißig (Deutsche Telekom AG) <leonhard.kreissig@telekom.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 recursive-include netbox_ontap/templates *.html

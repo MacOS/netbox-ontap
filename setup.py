@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Gabor Somogyvari, Leonhard Kreißig (Deutsche Telekom AG) <leonhard.kreissig@telekom.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from setuptools import find_packages, setup
 
 with open('README.md', 'r') as f:
@@ -13,9 +17,9 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    author='Gabor Somogyvari, Leonhard Kreißig',
-    url='https://gitlab.devops.telekom.de/leonhard.kreissig/netbox-ontap',
-    keywords=['netbox', 'netbox-plugin'],
+    author='Gabor Somogyvari, Leonhard Kreißig (Deutsche Telekom AG)',
+    url='https://github.com/telekom/netbox-ontap',
+    keywords=['netbox', 'netbox-plugin', 'ontap', 'netapp'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: Apache Software License',

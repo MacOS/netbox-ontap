@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Gabor Somogyvari, Leonhard Kreißig (Deutsche Telekom AG) <leonhard.kreissig@telekom.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from netbox.plugins import PluginMenu, PluginMenuButton, PluginMenuItem
 
 cluster_item = PluginMenuItem(

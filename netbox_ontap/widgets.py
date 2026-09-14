@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Leonhard Kreißig (Deutsche Telekom AG) <leonhard.kreissig@telekom.de>
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from extras.dashboard.widgets import ObjectCountsWidget
 from extras.dashboard.utils import register_widget
 from django.utils.translation import gettext as _

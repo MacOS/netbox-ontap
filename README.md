@@ -1,6 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2026 Gabor Somogyvari, Leonhard Kreißig (Deutsche Telekom AG) <leonhard.kreissig@telekom.de>
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # NetBox ONTAP
 
-A [NetBox](https://github.com/netbox-community/netbox) plugin for documenting NetApp ONTAP storage infrastructure alongside existing virtualization resources.
+A [NetBox](https://github.com/netbox-community/netbox) plugin for documenting NetApp ONTAP storage infrastructure alongside existing virtualization resources. This plugin is a Fork of Gabor Somogyvari's general [netbox-storage](https://github.com/viroge/netbox-storage) plugin.  
+
+[![REUSE Compliance Check](../../actions/workflows/reuse-compliance.yml/badge.svg)](../../actions/workflows/reuse-compliance.yml)
+[![OpenSSF Scorecard Score](https://api.scorecard.dev/projects/github.com/telekom/netbox-ontap/badge)](https://scorecard.dev/viewer/?uri=github.com/telekom/netbox-ontap/badge)
 
 **Minimum NetBox version: 4.3.0**
 
@@ -48,7 +57,7 @@ The plugin adds a **Storage** card on the detail page of:
 
 ## Installation
 
-The plugin is not available on PyPI and must be installed from source.
+The plugin is not yet available on PyPI and must be installed from source.
 
 ### Steps
 
@@ -56,7 +65,7 @@ The plugin is not available on PyPI and must be installed from source.
 
 ```bash
 cd /opt/netbox
-git clone https://gitlab.devops.telekom.de/leonhard.kreissig/netbox-ontap.git
+git clone https://github.com/telekom/netbox-ontap.git
 ```
 
 2. Install the package into the NetBox virtual environment:
@@ -92,7 +101,7 @@ python3 manage.py collectstatic --no-input
 sudo systemctl restart netbox netbox-rq
 ```
 
-> Paths above assume a standard installation under `/opt/netbox`. Adjust as needed.
+> Paths above assume a standard installation under `/opt/netbox`. Adjust as needed. You don't neccessarily need to have the plugin within your netbox directory and can place it anywhere on your machine, but keeping it nearby to NetBox might be smart.
 
 ---
 
@@ -120,3 +129,22 @@ The plugin exposes a full CRUD API under:
 ```
 
 Supported endpoints: `cluster`, `node`, `ha-pair`, `aggregate`, `svm`, `volume`, `qtree`, `quota`, `lun`.
+
+
+## Code of Conduct
+
+This project has adopted the [Contributor Covenant](https://www.contributor-covenant.org/) in version 2.1 as our code of conduct. Please see the details in our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). All contributors must abide by the code of conduct.
+
+By participating in this project, you agree to abide by its [Code of Conduct](./CODE_OF_CONDUCT.md) at all times.
+
+## Licensing
+Copyright (c) 2026 Gabor Somogyvari, Deutsche Telekom AG
+
+All content in this repository is licensed under at least one of the licenses found in [./LICENSES](./LICENSES); you may not use this file, or any other file in this repository, except in compliance with the Licenses. 
+You may obtain a copy of the Licenses by reviewing the files found in the [./LICENSES](./LICENSES) folder.
+
+Unless required by applicable law or agreed to in writing, software distributed under the Licenses is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See in the [./LICENSES](./LICENSES) folder for the specific language governing permissions and limitations under the Licenses.
+
+This project follows the [REUSE standard for software licensing](https://reuse.software/). 
+Each file contains copyright and license information, and license texts can be found in the [./LICENSES](./LICENSES) folder. For more information visit https://reuse.software/.
+You can find a guide for developers at https://telekom.github.io/reuse-template/.
